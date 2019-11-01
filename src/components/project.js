@@ -81,15 +81,105 @@ class Project extends Component{
             )
         }else if(this.state.activeTab === 1){
             return(
-                <div> <h1>Made with Vue JS</h1>  </div>
+                <Grid className="projects-grid">
+
+                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
+                <CardTitle style={{color: '#fff', height: '175px',
+                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
+                    React Project #1
+                </CardTitle>
+                <CardText>
+                    <ul>
+                        <li>Calculator Implementation of the iOS calculator built in React.</li>
+                        <li>Emoji Search Simple React app for searching emoji.</li>
+                    </ul>
+                </CardText>
+                <CardActions border>
+                    <Button colored>Github</Button>
+                    <Button colored>CodePen</Button>
+                    <Button colored>LiveDemo</Button>
+                </CardActions>
+                <CardMenu style={{color: '#fff'}}>
+                    <IconButton name="share"/>
+                </CardMenu>
+                </Card>
+
+                </Grid>
             )
         }else if(this.state.activeTab === 2){
             return(
-                <div> <h1>Made with MongoDB</h1> </div>
+                <Grid className="projects-grid">
+
+                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
+                <CardTitle style={{color: '#fff', height: '175px',
+                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
+                    React Project #1
+                </CardTitle>
+                <CardText>
+                    <ul>
+                        <li>Calculator Implementation of the iOS calculator built in React.</li>
+                        <li>Emoji Search Simple React app for searching emoji.</li>
+                    </ul>
+                </CardText>
+                <CardActions border>
+                    <Button colored>Github</Button>
+                    <Button colored>CodePen</Button>
+                    <Button colored>LiveDemo</Button>
+                </CardActions>
+                <CardMenu style={{color: '#fff'}}>
+                    <IconButton name="share"/>
+                </CardMenu>
+                </Card>
+
+                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
+                <CardTitle style={{color: '#fff', height: '175px',
+                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
+                    React Project #2
+                </CardTitle>
+                <CardText>
+                    <ul>
+                        <li>Pokedex The list of Pokémon with live search.</li>
+                        <li>Shopping Cart Simple ecommerce cart application built using React.</li>
+                    </ul>
+                </CardText>
+                <CardActions border>
+                    <Button colored>Github</Button>
+                    <Button colored>CodePen</Button>
+                    <Button colored>LiveDemo</Button>
+                </CardActions>
+                <CardMenu style={{color: '#fff'}}>
+                    <IconButton name="share"/>
+                </CardMenu>
+                </Card>    
+
+                </Grid>
             )
         }else if(this.state.activeTab === 3){
             return(
-                <div> <h1>Made with Java</h1> </div>
+                <Grid className="projects-grid">
+
+                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
+                <CardTitle style={{color: '#fff', height: '175px',
+                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
+                    React Project #1
+                </CardTitle>
+                <CardText>
+                    <ul>
+                        <li>Calculator Implementation of the iOS calculator built in React.</li>
+                        <li>Emoji Search Simple React app for searching emoji.</li>
+                    </ul>
+                </CardText>
+                <CardActions border>
+                    <Button colored>Github</Button>
+                    <Button colored>CodePen</Button>
+                    <Button colored>LiveDemo</Button>
+                </CardActions>
+                <CardMenu style={{color: '#fff'}}>
+                    <IconButton name="share"/>
+                </CardMenu>
+                </Card>
+
+                </Grid>
             )
         }
 
