@@ -10,9 +10,9 @@ class About extends Component{
                         <h2>About Me</h2>
                     </Cell>
                 </Grid>
-                <Grid className="info-grid">
+                <Grid >
                     <Cell col={6}> 
-                        <div class="short-info" style={{visibility: 'visible', animationName: 'fadeInUp'}}>
+                        <div className="short-info" style={{visibility: 'visible', animationName: 'fadeInUp'}}>
                             <h3>Personal Statement</h3>
                             <p >
                             I am an energetic, ambitious and adventure loving person who has
@@ -21,9 +21,9 @@ class About extends Component{
                             achieve a certain objective on time and with excellence.
                             </p>
                         </div>
-                        <div class="short-info" style={{visibility: 'visible', animationName: 'fadeInUp'}}>
+                        <div className="short-info" style={{visibility: 'visible', animationName: 'fadeInUp'}}>
                             <h3>What I Do ?</h3>
-                            <ul class="list-check">
+                            <ul className="list-check">
                                 <li>Frontend Development</li>
                                 <li>Backend Development</li>
                                 <li>Responsiveness and Accessibility</li>
@@ -32,7 +32,7 @@ class About extends Component{
                                 <li>Testing and Documentation</li>
                             </ul>
                         </div>
-                        <div class="short-info" style={{visibility: 'visible', animationName: 'fadeInUp'}}>
+                        <div className="short-info" style={{visibility: 'visible', animationName: 'fadeInUp'}}>
                         <h3>Interests</h3>
                         <p>
                             I am very much interested in keeping up with the trends in
@@ -42,13 +42,13 @@ class About extends Component{
                             country.
                         </p>
                         </div>
-                        <div class="download-button">
+                        <div className="download-button">
                         <Button raised accent ripple style={{marginRight:'15px'}} href="https://drive.google.com/file/d/1_jx9TyMmbcsDEwYSptIU_BvExBdMmk56/view?usp=sharing" 
                         target="_blank" rel="noopener noreferrer">
-                            <i class="fa fa-download">View CV</i> 
+                            <i className="fa fa-download">View CV</i> 
                         </Button> 
                         <Button raised colored ripple style={{marginRight:'15px'}} href="/assets/mycv.pdf" target="_blank" rel="noopener noreferrer">
-                            <i class="fa fa-download">Download CV</i> 
+                            <i className="fa fa-download">Download CV</i> 
                         </Button>
                         </div>
                     </Cell>

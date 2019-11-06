@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="demo-big-content">
+    <div className="demo-big-content" >
     <Layout fixedHeader>
         <Header className="header-color" title={<Link style={{textDecoration:'none', color:'white'}} to="/myportfolio/">Jholok</Link>} scroll>
             <Navigation>
@@ -16,7 +16,7 @@ function App() {
                 <Link to="/contact">Contact</Link>
             </Navigation>
         </Header>
-        <Drawer title={<Link style={{textDecoration:'none', color:'black'}} to="/myportfolio/">Jholok</Link>} scroll>
+        <Drawer title={<Link style={{textDecoration:'none', color:'black'}} to="/myportfolio/">Jholok</Link>}>
             <Navigation>
                 {/* <Link to="/">Home</Link> */}
                 <Link to="/resume">Resume</Link>
