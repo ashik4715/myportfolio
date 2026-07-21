@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import ProjectCard from '../shared/ProjectCard';
 
@@ -8,10 +8,10 @@ const ProjectsPage = () => {
   const [filter, setFilter] = useState('all');
 
   const projects = [
-    { id: 1, title: 'WeGro Global', description: 'Agricultural Fintech Platform for smallholder farmers with NestJS backend and investment platform.', image: process.env.PUBLIC_URL + '/img/hamburg.avif', technologies: ['NestJS', 'TypeScript', 'PostgreSQL', 'AWS'], liveUrl: 'https://wegro.global', category: 'fintech' },
-    { id: 2, title: 'Commerce Connections', description: 'Enterprise B2B/EDI Platform for global trading partners with API integrations.', image: process.env.PUBLIC_URL + '/img/hamburg.avif', technologies: ['Angular', 'MongoDB', 'EDI Systems'], liveUrl: 'https://commerce-connections.com', category: 'enterprise' },
-    { id: 3, title: 'AshMart BD', description: 'Multi-category e-commerce platform with payment processing and vendor management.', image: process.env.PUBLIC_URL + '/img/hamburg.avif', technologies: ['Laravel', 'PHP', 'MySQL', 'Payment APIs'], liveUrl: 'https://www.ashmartbd.com', category: 'ecommerce' },
-    { id: 4, title: 'Azerbaijan Medical Journal', description: 'Academic publishing platform with content management and email marketing.', image: process.env.PUBLIC_URL + '/img/hamburg.avif', technologies: ['Laravel', 'PHP', 'MySQL', 'Email Marketing'], liveUrl: 'https://www.azerbaijanmedicaljournal.net', category: 'academic' },
+    { id: 1, title: 'WeGro Global', description: 'Agricultural Fintech Platform for smallholder farmers with NestJS backend and investment platform.', image: process.env.PUBLIC_URL + '/img/wegro-global.png', technologies: ['NestJS', 'TypeScript', 'PostgreSQL', 'AWS'], liveUrl: 'https://wegro.global', category: 'fintech' },
+    { id: 2, title: 'Commerce Connections', description: 'Enterprise B2B/EDI Platform for global trading partners with API integrations.', image: process.env.PUBLIC_URL + '/img/commerce-connections.png', technologies: ['Angular', 'MongoDB', 'EDI Systems'], liveUrl: 'https://commerce-connections.com', category: 'enterprise' },
+    { id: 3, title: 'Ori Food & Beverage', description: 'ORI FOOD & BEVERAGE LTD. specializes in producing and supplying high-quality food and beverage products.', image: process.env.PUBLIC_URL + '/img/ori-bd.png', technologies: ['Laravel', 'PHP', 'MySQL', 'Payment APIs'], liveUrl: 'https://www.orifnb.com/', category: 'ecommerce' },
+    { id: 4, title: 'Azerbaijan Medical Journal', description: 'Academic publishing platform with content management and email marketing.', image: process.env.PUBLIC_URL + '/img/azerbaijan-medical.png', technologies: ['Laravel', 'PHP', 'MySQL', 'Email Marketing'], liveUrl: 'https://www.azerbaijanmedicaljournal.net', category: 'academic' },
   ];
 
   const categories = ['all', 'fintech', 'enterprise', 'ecommerce', 'academic'];
@@ -28,9 +28,8 @@ const ProjectsPage = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-wrap justify-center gap-4 mb-12">
           {categories.map((category) => (
             <button key={category} onClick={() => setFilter(category)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                filter === category ? 'bg-portavia-green text-black' : isDark ? 'bg-portavia-gray text-white hover:bg-portavia-gray/80' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-              }`}>
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${filter === category ? 'bg-portavia-green text-black' : isDark ? 'bg-portavia-gray text-white hover:bg-portavia-gray/80' : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                }`}>
               {category.charAt(0).toUpperCase() + category.slice(1)}
             </button>
           ))}

@@ -8,8 +8,8 @@ const HomePage = () => {
   const { isDark } = useTheme();
 
   const featuredProjects = [
-    { id: 1, title: 'WeGro Global', description: 'Agricultural Fintech Platform for smallholder farmers', image: process.env.PUBLIC_URL + '/img/hamburg.avif', technologies: ['NestJS', 'TypeScript', 'PostgreSQL', 'AWS'], liveUrl: 'https://wegro.global' },
-    { id: 2, title: 'Commerce Connections', description: 'Enterprise B2B/EDI Platform for global trading', image: process.env.PUBLIC_URL + '/img/hamburg.avif', technologies: ['Angular', 'MongoDB', 'EDI Systems'], liveUrl: 'https://commerce-connections.com' },
+    { id: 1, title: 'WeGro Global', description: 'Agricultural Fintech Platform for smallholder farmers', image: process.env.PUBLIC_URL + '/img/wegro-global.png', technologies: ['NestJS', 'TypeScript', 'PostgreSQL', 'AWS'], liveUrl: 'https://wegro.global' },
+    { id: 2, title: 'Commerce Connections', description: 'Enterprise B2B/EDI Platform for global trading', image: process.env.PUBLIC_URL + '/img/commerce-connections.png', technologies: ['Angular', 'MongoDB', 'EDI Systems'], liveUrl: 'https://commerce-connections.com' },
   ];
 
   return (
