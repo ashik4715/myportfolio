@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --portavia-green: #c8ff00;
+  --portavia-dark: #1a1a1a;
+  --portavia-light: #ffffff;
+  --portavia-gray: #2d2d2d;
+  --portavia-light-gray: #f5f5f5;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark {
+  background-color: var(--portavia-dark);
+  color: var(--portavia-light);
+}
+
+.light {
+  background-color: var(--portavia-light);
+  color: var(--portavia-dark);
+}
