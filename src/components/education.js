@@ -1,22 +1,19 @@
-import React, { Component } from 'react';
-import { Grid, Cell} from 'react-mdl';
+import React from 'react';
 
-class Education extends Component{
-    render(){
-        return(
-            <div>
-                <Grid>
-					<Cell col={4}>
-						<p>{this.props.startYear} - {this.props.endYear}</p>
-					</Cell>
-					<Cell col={8}>
-						<h4 style={{marginTop:'0px'}}> {this.props.schoolName} </h4>
-						<p>{this.props.schoolDescription}</p>
-					</Cell>
-				</Grid>
-            </div>
-        )
-    }
+function Education({ startYear, endYear, schoolName, schoolDescription }) {
+  return (
+    <div>
+      <div>
+        <div className="cell">
+          <p>{startYear} - {endYear}</p>
+        </div>
+        <div className="cell">
+          <h4 style={{marginTop:'0px'}}> {schoolName} </h4>
+          <p>{schoolDescription}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Education;

@@ -1,21 +1,22 @@
-import React, { Component } from 'react';
-import { Grid, Cell, ProgressBar} from 'react-mdl';
+import React from 'react';
 
-class Skills extends Component{
-    render(){
-        return(
-            <div>
-                <Grid>
-					<Cell col={12}>
-<div style={{display:'flex'}}>
-	{this.props.skill} <ProgressBar style={{margin:'auto', width:'75%'}} 
-	progress={this.props.progress}/>
-</div>
-					</Cell>
-				</Grid>
+function Skills({ skill, progress }) {
+  return (
+    <div>
+      <div>
+        <div className="cell">
+          <div style={{display:'flex'}}>
+            {skill} 
+            <div style={{margin:'auto', width:'75%'}}>
+              <div style={{height: '10px', backgroundColor: '#ccc'}}>
+                <div style={{height: '100%', width: `${progress}%`, backgroundColor: '#4caf50'}}></div>
+              </div>
             </div>
-        )
-    }
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Skills;

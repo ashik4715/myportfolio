@@ -1,213 +1,150 @@
-import React, { Component } from 'react';
-import { Tabs, Tab, Grid, Cell, Card, CardTitle, CardText, CardActions, Button, CardMenu, IconButton } from 'react-mdl';
+import React, { useState } from 'react';
 
-class Project extends Component{
-    constructor(props){
-        super(props);
-        this.state = { activeTab:0 };
-    }
+function Project() {
+  const [activeTab, setActiveTab] = useState(0);
 
-    toggleCategories(){
-        if(this.state.activeTab === 0){
-            return(
-
-                <Grid className="projects-grid">
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #1
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Calculator Implementation of the iOS calculator built in React.</li>
-                        <li>Emoji Search Simple React app for searching emoji.</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #2
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Pokedex The list of Pokémon with live search.</li>
-                        <li>Shopping Cart Simple ecommerce cart application built using React.</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>    
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #3
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Course Learn Page Open Source LMS script in Laravel 5.8 and ReactJS 16.9</li>
-                        <li>BMI Calculator A React Hooks app for calculating BMI</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>
-
-                </Grid>
-
-            )
-        }else if(this.state.activeTab === 1){
-            return(
-                <Grid className="projects-grid">
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #1
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Calculator Implementation of the iOS calculator built in React.</li>
-                        <li>Emoji Search Simple React app for searching emoji.</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>
-
-                </Grid>
-            )
-        }else if(this.state.activeTab === 2){
-            return(
-                <Grid className="projects-grid">
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #1
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Calculator Implementation of the iOS calculator built in React.</li>
-                        <li>Emoji Search Simple React app for searching emoji.</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #2
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Pokedex The list of Pokémon with live search.</li>
-                        <li>Shopping Cart Simple ecommerce cart application built using React.</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>    
-
-                </Grid>
-            )
-        }else if(this.state.activeTab === 3){
-            return(
-                <Grid className="projects-grid">
-
-                <Card shadow={5} style={{midWidth: '450', margin: 'auto'}}>
-                <CardTitle style={{color: '#fff', height: '175px',
-                    background: 'url(https://facebook.github.io/react/logo-og.png) center / cover'}}>
-                    React Project #1
-                </CardTitle>
-                <CardText>
-                    <ul>
-                        <li>Calculator Implementation of the iOS calculator built in React.</li>
-                        <li>Emoji Search Simple React app for searching emoji.</li>
-                    </ul>
-                </CardText>
-                <CardActions border>
-                    <Button colored>Github</Button>
-                    <Button colored>CodePen</Button>
-                    <Button colored>LiveDemo</Button>
-                </CardActions>
-                <CardMenu style={{color: '#fff'}}>
-                    <IconButton name="share"/>
-                </CardMenu>
-                </Card>
-
-                </Grid>
-            )
-        }
-
-    }
-
-    render(){
-        return(
-            <div className="category-tabs">
-                <Tabs activeTab={this.state.activeTab} onChange={(tabId) => this.setState({activeTab : tabId})} ripple>
-                    <Tab>React</Tab>
-                    <Tab>VueJS</Tab>
-                    <Tab>MongoDB</Tab>
-                    <Tab>Java</Tab>
-                </Tabs>
-
-                <section>
-                    <Grid>
-                        <Cell col={12}>
-                            <div className="content">
-                                {this.toggleCategories()}
-                            </div>
-                        </Cell>
-                    </Grid>
-                </section>
-
+  const toggleCategories = () => {
+    if (activeTab === 0) {
+      return (
+        <div className="projects-grid">
+          <div className="card">
+            <div className="card-title">
+              React Project #1
             </div>
-        )
+            <div className="card-text">
+              <ul>
+                <li>Calculator Implementation of the iOS calculator built in React.</li>
+                <li>Emoji Search Simple React app for searching emoji.</li>
+              </ul>
+            </div>
+            <div className="card-actions">
+              <button>Github</button>
+              <button>CodePen</button>
+              <button>LiveDemo</button>
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="card-title">
+              React Project #2
+            </div>
+            <div className="card-text">
+              <ul>
+                <li>Pokedex The list of Pokémon with live search.</li>
+                <li>Shopping Cart Simple ecommerce cart application built using React.</li>
+              </ul>
+            </div>
+            <div className="card-actions">
+              <button>Github</button>
+              <button>CodePen</button>
+              <button>LiveDemo</button>
+            </div>
+          </div>    
+
+          <div className="card">
+            <div className="card-title">
+              React Project #3
+            </div>
+            <div className="card-text">
+              <ul>
+                <li>Course Learn Page Open Source LMS script in Laravel 5.8 and ReactJS 16.9</li>
+                <li>BMI Calculator A React Hooks app for calculating BMI</li>
+              </ul>
+            </div>
+            <div className="card-actions">
+              <button>Github</button>
+              <button>CodePen</button>
+              <button>LiveDemo</button>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (activeTab === 1) {
+      return (
+        <div className="projects-grid">
+          <div className="card">
+            <div className="card-title">
+              Vue Project #1
+            </div>
+            <div className="card-text">
+              <ul>
+                <li>Calculator Implementation of the iOS calculator built in Vue.</li>
+                <li>Emoji Search Simple Vue app for searching emoji.</li>
+              </ul>
+            </div>
+            <div className="card-actions">
+              <button>Github</button>
+              <button>CodePen</button>
+              <button>LiveDemo</button>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (activeTab === 2) {
+      return (
+        <div className="projects-grid">
+          <div className="card">
+            <div className="card-title">
+              MongoDB Project #1
+            </div>
+            <div className="card-text">
+              <ul>
+                <li>Calculator Implementation of the iOS calculator built in MongoDB.</li>
+                <li>Emoji Search Simple MongoDB app for searching emoji.</li>
+              </ul>
+            </div>
+            <div className="card-actions">
+              <button>Github</button>
+              <button>CodePen</button>
+              <button>LiveDemo</button>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (activeTab === 3) {
+      return (
+        <div className="projects-grid">
+          <div className="card">
+            <div className="card-title">
+              Java Project #1
+            </div>
+            <div className="card-text">
+              <ul>
+                <li>Calculator Implementation of the iOS calculator built in Java.</li>
+                <li>Emoji Search Simple Java app for searching emoji.</li>
+              </ul>
+            </div>
+            <div className="card-actions">
+              <button>Github</button>
+              <button>CodePen</button>
+              <button>LiveDemo</button>
+            </div>
+          </div>
+        </div>
+      );
     }
+  };
+
+  return (
+    <div className="category-tabs">
+      <div className="tabs">
+        <button onClick={() => setActiveTab(0)}>React</button>
+        <button onClick={() => setActiveTab(1)}>VueJS</button>
+        <button onClick={() => setActiveTab(2)}>MongoDB</button>
+        <button onClick={() => setActiveTab(3)}>Java</button>
+      </div>
+
+      <section>
+        <div>
+          <div className="cell">
+            <div className="content">
+              {toggleCategories()}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
 
 export default Project;

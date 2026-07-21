@@ -1,22 +1,19 @@
-import React, { Component } from 'react';
-import { Grid, Cell} from 'react-mdl';
+import React from 'react';
 
-class Experience extends Component{
-    render(){
-        return(
-            <div>
-                <Grid>
-					<Cell col={4}>
-						<p>{this.props.startMonth} {this.props.startYear} - {this.props.endMonth} {this.props.endYear}</p>
-					</Cell>
-					<Cell col={8}>
-						<h4 style={{marginTop:'0px'}}> {this.props.schoolName} </h4>
-						<p>{this.props.schoolDescription}</p>
-					</Cell>
-				</Grid>
-            </div>
-        )
-    }
+function Experience({ startMonth, startYear, endMonth, endYear, schoolName, schoolDescription }) {
+  return (
+    <div>
+      <div>
+        <div className="cell">
+          <p>{startMonth} {startYear} - {endMonth} {endYear}</p>
+        </div>
+        <div className="cell">
+          <h4 style={{marginTop:'0px'}}> {schoolName} </h4>
+          <p>{schoolDescription}</p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Experience;
