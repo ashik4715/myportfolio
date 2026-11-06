@@ -7,6 +7,7 @@ import ThemeToggle from './components/layout/ThemeToggle';
 import HomePage from './components/pages/HomePage';
 import AboutPage from './components/pages/AboutPage';
 import ProjectsPage from './components/pages/ProjectsPage';
+import SysArchitecturePage from './components/pages/SysArchitecturePage';
 import BlogsPage from './components/pages/BlogsPage';
 import ContactPage from './components/pages/ContactPage';
 
@@ -22,6 +23,7 @@ function App() {
 
               <Route path="/about" element={<AboutPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
+              <Route path="/sys-architecture" element={<SysArchitecturePage />} />
               <Route path="/blogs" element={<BlogsPage />} />
               <Route path="/contact" element={<ContactPage />} />
             </Routes>
