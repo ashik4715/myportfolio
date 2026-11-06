@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEGRO — Two systems, one platform (plain language deck)</title>
+<style>
+  :root{
+    --g900:#0B3B2E; --g850:#0E4433; --g800:#124B38; --g700:#155C42; --g600:#1B6B4A;
+    --g500:#2E8B62; --orange:#F58220; --orange-d:#D96A0F;
+    --white:#FFFFFF; --mint:#D9E8E0; --mint-d:#BFDCCB; --dim:#9FC2B0;
+    --red:#E26A4A;
+    --head:'Arial Black','Arial Bold',Arial,'Helvetica Neue',Helvetica,sans-serif;
+    --body:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+    --mono:'Consolas','SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:#071F19; font-family:var(--body); color:var(--mint);
+       display:flex; align-items:center; justify-content:center; overflow:hidden}
+
+  /* ---------- deck shell ---------- */
+  #stage{position:relative; width:1280px; height:720px; transform-origin:center center;
+         box-shadow:0 30px 80px rgba(0,0,0,.55); background:var(--g900)}
+  .slide{position:absolute; inset:0; padding:32px 46px 42px; display:none; overflow:hidden;
+         background:
+           radial-gradient(1200px 600px at 78% -10%, rgba(46,139,98,.20), transparent 60%),
+           radial-gradient(900px 500px at -8% 110%, rgba(245,130,32,.10), transparent 55%),
+           linear-gradient(160deg,#0C4132 0%, #0B3B2E 45%, #092F25 100%);}
+  .slide.active{display:flex; flex-direction:column; animation:fade .28s ease both}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* petals — small, bottom-left only */
+  .slide::before{content:""; position:absolute; left:-58px; bottom:-24px; width:80px; height:80px;
+     background:var(--orange); border-radius:0 88% 0 88%; transform:rotate(24deg); opacity:.95}
+  .slide::after{content:""; position:absolute; left:-40px; bottom:56px; width:48px; height:48px;
+     background:var(--orange); border-radius:0 88% 0 88%; transform:rotate(-12deg); opacity:.8}
+
+  /* ---------- chrome ---------- */
+  .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px}
+  .logo{font-family:var(--head); font-size:22px; letter-spacing:.02em; color:var(--orange)}
+  .section{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); font-weight:700}
+  .kicker{font-size:11.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--orange); font-weight:700}
+  h1{font-family:var(--head); font-size:38px; line-height:1.02; color:#fff; letter-spacing:-.005em;
+     text-transform:uppercase; margin:5px 0 0}
+  .rule{width:78px; height:4px; background:var(--orange); margin:11px 0 20px; border-radius:2px}
+  .foot{position:absolute; left:46px; right:46px; bottom:15px; display:flex; justify-content:space-between;
+        font-size:10px; color:var(--dim); letter-spacing:.06em}
+  .body{position:relative; flex:1; display:flex; flex-direction:column; min-height:0; justify-content:center; gap:0}
+  .cap{font-size:10.6px; text-transform:uppercase; letter-spacing:.13em; color:var(--orange); font-weight:800; margin-bottom:10px}
+
+  /* ---------- primitives ---------- */
+  .card{background:var(--g700); border-radius:12px; padding:16px 18px; position:relative}
+  .card.deep{background:var(--g850); border:1px solid rgba(46,139,98,.55)}
+  .card .h{font-size:13.4px; font-weight:800; color:#fff; letter-spacing:.01em}
+  .card .cap{font-size:10.4px; text-transform:uppercase; letter-spacing:.13em; color:var(--orange); font-weight:800; margin-bottom:8px}
+  .card .cap.mint{color:var(--mint-d)}
+  .muted{color:var(--mint-d); font-size:12.4px; line-height:1.55}
+  .small{font-size:11.2px; line-height:1.5; color:var(--dim)}
+  ul.b{list-style:none; display:grid; gap:6px}
+  ul.b li{font-size:12px; line-height:1.5; color:var(--mint-d); padding-left:14px; position:relative}
+  ul.b li::before{content:"▸"; position:absolute; left:0; color:var(--orange); font-weight:800}
+  ul.b li b{color:#fff; font-weight:700}
+  .pill{display:inline-flex; align-items:center; justify-content:center; padding:6px 13px; border-radius:99px;
+        background:var(--g500); color:#fff; font-size:11px; font-weight:700; white-space:nowrap}
+  .pill.ghost{background:var(--g700); color:var(--mint-d)}
+  .grid{display:grid; gap:14px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .chips{display:flex; gap:10px; flex-wrap:wrap}
+
+  /* ---------- kpi ---------- */
+  .kpis{display:grid; grid-template-columns:repeat(5,1fr); gap:13px}
+  .kpis.k4{grid-template-columns:repeat(4,1fr)}
+  .kpi{background:var(--g700); border-radius:12px; padding:13px 14px 13px 18px; position:relative}
+  .kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:12px 0 0 12px; background:var(--orange)}
+  .kpi.alt::before{background:var(--mint-d)}
+  .kpi .v{font-family:var(--head); font-size:29px; color:#fff; line-height:1}
+  .kpi .l{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--mint-d); font-weight:800; margin-top:5px}
+  .kpi .n{font-size:10px; color:var(--dim); margin-top:5px}
+
+  /* ---------- tables (technology slide) ---------- */
+  table{width:100%; border-collapse:collapse}
+  table tr{border-bottom:1px solid rgba(46,139,98,.35)}
+  table tr:last-child{border-bottom:none}
+  table td{padding:7.5px 0; vertical-align:top; font-size:11.6px; color:var(--mint-d); line-height:1.4}
+  table td:first-child{width:37%; font-weight:800; color:#fff; padding-right:14px}
+
+  /* ---------- numbered flow (loan cycle) ---------- */
+  .flowwrap{position:relative; margin-top:4px}
+  .flowwrap .fline{position:absolute; left:6%; right:6%; top:23px; height:2px; background:var(--orange); opacity:.9}
+  .fsteps{display:grid; grid-template-columns:repeat(8,1fr); gap:8px; position:relative}
+  .fstep{text-align:center; position:relative}
+  .fnode{width:48px; height:48px; border-radius:50%; background:var(--g500); border:2px solid var(--orange);
+         display:flex; align-items:center; justify-content:center; font-family:var(--head); font-size:13.5px;
+         color:#fff; position:relative; z-index:2; margin:0 auto 11px}
+  .fstep:nth-child(even) .fnode{border-color:var(--mint-d)}
+  .fcard{background:var(--g700); border-radius:10px; padding:12px 10px; text-align:left; min-height:126px}
+  .fcard .h{font-size:10.6px; font-weight:800; color:#fff; text-transform:uppercase; letter-spacing:.04em}
+  .fcard .d{font-size:10px; color:var(--mint-d); line-height:1.4; margin-top:6px}
+
+  /* ---------- arrow loop (investor journey) ---------- */
+  .loopflow{display:flex; gap:5px; align-items:stretch}
+  .lstep{flex:1 1 0; background:var(--g700); border-radius:10px; padding:11px 11px 12px;
+         border-top:3px solid var(--g500)}
+  .lstep.hot{border-top-color:var(--orange)}
+  .lstep .num{font-family:var(--head); font-size:11.5px; color:var(--orange)}
+  .lstep .h{font-size:11.4px; font-weight:800; color:#fff; margin-top:2px}
+  .lstep .d{font-size:9.8px; color:var(--mint-d); line-height:1.36; margin-top:5px}
+  .larrow{flex:0 0 12px; display:flex; align-items:center; justify-content:center;
+          color:var(--orange); font-size:14px; font-weight:800}
+
+  /* ---------- hero / end ---------- */
+  .hero{padding:0}
+  .hero .wrap{display:grid; grid-template-columns:1fr 340px; height:100%}
+  .hero .left{padding:52px 46px 46px; display:flex; flex-direction:column; justify-content:center}
+  .hero .right{background:var(--g850); border-left:1px solid rgba(245,130,32,.55); padding:56px 34px}
+  .hero h1.big{font-size:62px; line-height:1.0; margin:16px 0 0}
+  .hero .sub{font-size:14px; line-height:1.6; color:var(--mint); max-width:600px; margin-bottom:26px}
+  .hero .rail{list-style:none; display:grid; gap:17px; margin-top:16px}
+  .hero .rail li{display:grid; grid-template-columns:34px 1fr; gap:10px; align-items:baseline}
+  .hero .rail .n{font-family:var(--head); font-size:14px; color:var(--orange)}
+  .hero .rail .t{font-size:12px; color:var(--mint); line-height:1.35}
+  .endslide{padding:32px 46px 30px}
+  .endcard{background:var(--g700); border-radius:12px; padding:16px 18px; position:relative}
+  .endcard .n{font-family:var(--head); font-size:12px; color:var(--orange)}
+  h1.huge{font-size:96px; line-height:.94; letter-spacing:.01em}
+
+  /* ---------- notes drawer ---------- */
+  #notes{position:absolute; left:0; right:0; bottom:0; max-height:44%; overflow:auto; display:none;
+     background:rgba(4,20,15,.96); border-top:2px solid var(--orange); padding:16px 24px 20px;
+     color:var(--mint); font-size:12px; line-height:1.55; white-space:pre-wrap; z-index:20}
+  #notes.show{display:block}
+
+  /* ---------- markdown modal ---------- */
+  #mdwrap{position:fixed; inset:0; background:rgba(3,14,11,.86); display:none; z-index:60; padding:4vh 6vw}
+  #mdwrap.show{display:flex; flex-direction:column; gap:12px}
+  #mdbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  #mdbar h3{font-size:13px; color:#fff; letter-spacing:.06em; text-transform:uppercase; margin-right:auto}
+  button{font-family:var(--body); font-size:11.5px; font-weight:700; color:#fff; background:var(--g600);
+         border:1px solid rgba(255,255,255,.14); border-radius:8px; padding:8px 13px; cursor:pointer}
+  button:hover{background:var(--g500)}
+  button.pri{background:var(--orange); color:#20130A; border-color:transparent}
+  button.pri:hover{background:var(--orange-d); color:#fff}
+  #mdtext{flex:1; width:100%; background:#06231B; color:#CBE6D8; border:1px solid rgba(46,139,98,.5);
+          border-radius:10px; padding:16px; font-family:var(--mono); font-size:11.5px; line-height:1.5; resize:none}
+
+  #bar{position:fixed; top:0; left:0; height:3px; background:var(--orange); width:0; z-index:70; transition:width .2s}
+  #hud{position:fixed; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; align-items:center;
+       background:rgba(6,26,21,.9); border:1px solid rgba(46,139,98,.45); border-radius:99px; padding:6px 10px; z-index:50}
+  #hud .dots{display:flex; gap:5px; margin:0 6px}
+  #hud .dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.22); cursor:pointer}
+  #hud .dot.on{background:var(--orange); transform:scale(1.15)}
+  #hud .count{font-size:10.5px; color:var(--dim); font-weight:700; letter-spacing:.1em; min-width:46px; text-align:center}
+  #hud .btn{padding:5px 9px; font-size:10.5px; border-radius:99px}
+  .hint{position:fixed; bottom:18px; left:20px; font-size:10px; color:#5F8574; z-index:50; letter-spacing:.05em}
+
+  @media print{
+    @page{size:1280px 720px; margin:0}
+    body{display:block; overflow:visible; background:#fff}
+    #stage{transform:none!important; width:1280px; height:auto; box-shadow:none}
+    .slide{display:block!important; position:relative; width:1280px; height:720px; page-break-after:always}
+    .slide:last-of-type{page-break-after:auto}
+    .hero{display:block!important}
+    .hero .wrap{height:720px}
+    #hud,#bar,.hint,#notes,#mdwrap{display:none!important}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage">
+
+<!-- ══════════════════════════════ Title ══════════════════════════════ -->
+<section class="slide active hero" data-title="Title">
+  <div class="wrap">
+    <div class="left">
+      <div class="logo">WEGRO</div>
+      <div class="kicker" style="margin-top:26px">A plain-language briefing · November 2026</div>
+      <h1 class="big">TWO SYSTEMS.<br>ONE PLATFORM.</h1>
+      <div class="rule" style="margin:22px 0 20px"></div>
+      <p class="sub">How WEGRO runs the farm business and pays its investors &mdash; explained without technical words</p>
+      <div class="chips">
+        <span class="pill">12 slides</span>
+        <span class="pill">About 14 minutes</span>
+        <span class="pill">No code required</span>
+      </div>
+      <p class="small" style="margin-top:26px">Every number in this deck is counted from the real software, not estimated.</p>
+    </div>
+    <div class="right">
+      <div class="cap">In 14 minutes</div>
+      <ul class="rail">
+        <li><span class="n">01</span><span class="t">The big picture</span></li>
+        <li><span class="n">02</span><span class="t">OGRO, the farm system</span></li>
+        <li><span class="n">03</span><span class="t">How we keep it safe</span></li>
+        <li><span class="n">04</span><span class="t">The investor platform</span></li>
+        <li><span class="n">05</span><span class="t">Where they meet</span></li>
+        <li><span class="n">06</span><span class="t">How it goes live</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ Agenda ══════════════════════════════ -->
+<section class="slide" data-title="Agenda">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">Agenda</div>
+  </div>
+  <div class="kicker">14 minutes · 12 slides + closing</div>
+  <h1>WHAT WE WILL COVER</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="grid g2" style="gap:16px">
+      <div class="card" style="display:grid;grid-template-columns:52px 1fr 62px;gap:12px;align-items:center;padding:15px 18px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:13px;color:#fff">01</div>
+        <div><div class="h">The big picture</div><div class="small" style="margin-top:4px">The business problem, and why two systems</div></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--orange);text-align:right">1.5 min</div>
+      </div>
+      <div class="card" style="display:grid;grid-template-columns:52px 1fr 62px;gap:12px;align-items:center;padding:15px 18px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:13px;color:#fff">02</div>
+        <div><div class="h">OGRO, the farm system</div><div class="small" style="margin-top:4px">Numbers · four boxes · the 8-step loan cycle</div></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--orange);text-align:right">4.5 min</div>
+      </div>
+      <div class="card" style="display:grid;grid-template-columns:52px 1fr 62px;gap:12px;align-items:center;padding:15px 18px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:13px;color:#fff">03</div>
+        <div><div class="h">How we keep it safe</div><div class="small" style="margin-top:4px">Four doors, and a full record of every change</div></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--orange);text-align:right">1 min</div>
+      </div>
+      <div class="card" style="display:grid;grid-template-columns:52px 1fr 62px;gap:12px;align-items:center;padding:15px 18px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:13px;color:#fff">04</div>
+        <div><div class="h">The investor platform</div><div class="small" style="margin-top:4px">The app, the admin team, one investor's journey</div></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--orange);text-align:right">3 min</div>
+      </div>
+      <div class="card" style="display:grid;grid-template-columns:52px 1fr 62px;gap:12px;align-items:center;padding:15px 18px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:13px;color:#fff">05</div>
+        <div><div class="h">Where they meet</div><div class="small" style="margin-top:4px">Today separate, three bridges for tomorrow</div></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--orange);text-align:right">1.5 min</div>
+      </div>
+      <div class="card" style="display:grid;grid-template-columns:52px 1fr 62px;gap:12px;align-items:center;padding:15px 18px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:13px;color:#fff">06</div>
+        <div><div class="h">How it goes live</div><div class="small" style="margin-top:4px">Containers, one honest gap, and the closing</div></div>
+        <div style="font-size:10.5px;font-weight:800;color:var(--orange);text-align:right">1.5 min</div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:20px;padding-top:014px">Two systems, one owner. We start with the business picture and end with how it goes live.</p>
+  </div>
+  <div class="foot"><div></div><div>02 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Big picture ══════════════════════════════ -->
+<section class="slide" data-title="Big picture">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">01 · Big picture</div>
+  </div>
+  <div class="kicker">One brand, two products</div>
+  <h1>TWO SYSTEMS, ONE BUSINESS</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 200px 1fr;gap:0;align-items:stretch">
+      <div class="card" style="padding:20px">
+        <div class="cap">The farm system</div>
+        <div style="font-family:var(--head);font-size:24px;color:#fff;margin-bottom:12px">OGRO</div>
+        <ul class="b">
+          <li><b>Farmer:</b> needs the loan for the season</li>
+          <li><b>Field officer:</b> visits the land, checks the work</li>
+          <li><b>Bank:</b> puts the money in, gets it back</li>
+        </ul>
+        <p class="muted" style="margin-top:14px">One record per farmer: the loan, the inputs, the visits, and every payment.</p>
+        <div class="chips" style="margin-top:16px"><span class="pill">Farm ops</span><span class="pill">Loans</span><span class="pill">Bank</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 8px">
+        <div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--orange);text-transform:uppercase;text-align:center">No shared data</div>
+        <div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--orange);text-transform:uppercase;text-align:center">No shared team</div>
+        <div style="width:52px;height:2px;background:var(--g500);margin:6px 0"></div>
+        <div class="small" style="text-align:center">one can fail alone</div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div class="cap" style="color:var(--mint-d)">The money system</div>
+        <div style="font-family:var(--head);font-size:24px;color:#fff;margin-bottom:12px">WEGRO&#8209;INVESTOR</div>
+        <ul class="b">
+          <li><b>Investor:</b> buys a product, receives the return</li>
+          <li><b>Agent:</b> brings investors in, area by area</li>
+          <li><b>Admin team:</b> reviews, pays out, reports</li>
+        </ul>
+        <p class="muted" style="margin-top:14px">Raises the money, pays the returns, and runs the agent network.</p>
+        <div class="chips" style="margin-top:16px"><span class="pill">Investors</span><span class="pill">Returns</span><span class="pill">Agents</span></div>
+      </div>
+    </div>
+    <div class="card deep" style="margin-top:18px;border-left:4px solid var(--orange);padding:15px 18px">
+      <span class="muted"><b style="color:#fff">The only link today:</b> four public numbers on the investor home screen — money given out, farmers connected, products connected, returns paid.</span>
+    </div>
+  </div>
+  <div class="foot"><div></div><div>03 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ OGRO at a glance ══════════════════════════════ -->
+<section class="slide" data-title="OGRO at a glance">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">02 · OGRO</div>
+  </div>
+  <div class="kicker">The farm system · size and depth</div>
+  <h1>OGRO AT A GLANCE</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="kpis">
+      <div class="kpi"><div class="v">36</div><div class="l">business areas</div><div class="n">real company work</div></div>
+      <div class="kpi alt"><div class="v">8</div><div class="l">steps in the loan</div><div class="n">one farmer, start to finish</div></div>
+      <div class="kpi"><div class="v">5</div><div class="l">field visits</div><div class="n">per farmer, per season</div></div>
+      <div class="kpi alt"><div class="v">68</div><div class="l">recorded data updates</div><div class="n">never edited by hand</div></div>
+      <div class="kpi"><div class="v">4</div><div class="l">groups of users</div><div class="n">farmer · officer · bank · HQ</div></div>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card"><div class="cap">Who uses it</div>
+        <ul class="b"><li>The farmer, who needs the loan</li><li>The field officer, who visits the land</li><li>The bank and head office, who approve</li></ul></div>
+      <div class="card"><div class="cap">What it covers</div>
+        <ul class="b"><li>From land and survey to the loan and the inputs</li><li>Visits and crop checks during the season</li><li>Repayments, late fees, and the final settlement</li></ul></div>
+      <div class="card"><div class="cap">Why it matters</div>
+        <ul class="b"><li>36 areas means depth, not a demo</li><li>5 visits means the work is checked</li><li>68 recorded updates means safe data</li></ul></div>
+    </div>
+    <p class="muted" style="margin-top:20px;padding-top:016px"><b style="color:var(--orange)">One line to remember:</b> the loan cycle is the centre of the product, and every other part exists to support it.</p>
+  </div>
+  <div class="foot"><div></div><div>04 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Technology ══════════════════════════════ -->
+<section class="slide" data-title="Technology">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">02 · OGRO</div>
+  </div>
+  <div class="kicker">What each part does — no names to remember</div>
+  <h1>TECHNOLOGY, EXPLAINED SIMPLY</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="grid g2" style="gap:16px">
+      <div class="card" style="border-top:4px solid var(--orange)">
+        <div class="cap">The engine — server side</div>
+      <table>
+        <tr><td>Answers requests</td><td>The engine of the system, on a standard framework</td></tr>
+        <tr><td>Keeps the data</td><td>PostgreSQL — the database family banks use</td></tr>
+        <tr><td>Gives a short pass</td><td>A login pass that expires after one day</td></tr>
+        <tr><td>Holds the rule book</td><td>Roles and permissions for every screen</td></tr>
+        <tr><td>Sends the news</td><td>Emails, phone notifications, scheduled jobs</td></tr>
+      </table>
+      </div>
+      <div class="card" style="border-top:4px solid var(--mint-d)">
+        <div class="cap mint">What people see — screen side</div>
+      <table>
+        <tr><td>One app, all screens</td><td>The same app on a computer and on a phone</td></tr>
+        <tr><td>Installs like an app</td><td>Added to the phone home screen, no store</td></tr>
+        <tr><td>Charts and maps</td><td>Dashboards, field maps, and reports</td></tr>
+        <tr><td>Fast while working</td><td>Data is held for a moment, so screens feel quick</td></tr>
+        <tr><td>Hides the rest</td><td>A user sees only the part that belongs to him</td></tr>
+      </table>
+      </div>
+    </div>
+    <div class="card deep" style="margin-top:18px;border-left:4px solid var(--orange);padding:15px 18px">
+      <div class="cap">Why this matters to you</div>
+      <ul class="b" style="gap:5px">
+        <li>These are standard, well-known tools — many developers know them</li>
+        <li>You are not locked to one person, or to one company</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><div></div><div>05 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Four boxes ══════════════════════════════ -->
+<section class="slide" data-title="Four boxes">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">02 · OGRO</div>
+  </div>
+  <div class="kicker">Four big boxes, not thirty-six</div>
+  <h1>FOUR BOXES, ONE PRODUCT</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="grid g2" style="gap:16px">
+      <div class="card" style="padding:18px 20px;border-left:4px solid var(--orange)">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11.5px;color:#fff">01</div>
+          <div style="font-size:16px;font-weight:800;color:#fff">Money and risk</div>
+        </div>
+        <p class="muted">Loans, agreements, repayments, deposits, and the partner banks. This is the centre of the product.</p>
+      </div>
+      <div class="card" style="padding:18px 20px;border-left:4px solid var(--g500)">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11.5px;color:#fff">02</div>
+          <div style="font-size:16px;font-weight:800;color:#fff">Field work</div>
+        </div>
+        <p class="muted">Farmers, land records, surveys, field visits, and the notices we send to officers.</p>
+      </div>
+      <div class="card" style="padding:18px 20px;border-left:4px solid var(--mint-d)">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11.5px;color:#fff">03</div>
+          <div style="font-size:16px;font-weight:800;color:#fff">Stock and supplies</div>
+        </div>
+        <p class="muted">Products, warehouses, purchase orders, and sales — the input business.</p>
+      </div>
+      <div class="card" style="padding:18px 20px;border-left:4px solid var(--dim)">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11.5px;color:#fff">04</div>
+          <div style="font-size:16px;font-weight:800;color:#fff">The platform</div>
+        </div>
+        <p class="muted">Users, roles, permissions, and notifications — the part everybody uses.</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:20px;padding-top:018px"><b style="color:var(--orange)">Why it is built this way:</b> the boxes are separate, so a new feature changes one box — a faster test and less risk for everything else.</p>
+  </div>
+  <div class="foot"><div></div><div>06 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Loan cycle ══════════════════════════════ -->
+<section class="slide" data-title="Loan cycle">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">02 · OGRO</div>
+  </div>
+  <div class="kicker">The heart of the system — one farmer, start to finish</div>
+  <h1>THE LOAN CYCLE</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="flowwrap">
+      <div class="fline"></div>
+      <div class="fsteps">
+        <div class="fstep">
+          <div class="fnode">01</div>
+          <div class="fcard"><div class="h">Apply</div><div class="d">Officer visits, records land, answers, credit score</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">02</div>
+          <div class="fcard"><div class="h">Approve</div><div class="d">Officer recommends, supervisor checks; reject or block</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">03</div>
+          <div class="fcard"><div class="h">Agreement</div><div class="d">Written, approved, stored; corrections recorded</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">04</div>
+          <div class="fcard"><div class="h">Pay out</div><div class="d">Account opened, credit team approves, money moves</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">05</div>
+          <div class="fcard"><div class="h">Inputs</div><div class="d">Seeds, fertiliser, drone service — farmer confirms</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">06</div>
+          <div class="fcard"><div class="h">Visits</div><div class="d">Identity + 3 crop checks + harvest checkpoints</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">07</div>
+          <div class="fcard"><div class="h">Repay</div><div class="d">Every payment recorded; late fees added</div></div>
+        </div>
+        <div class="fstep">
+          <div class="fnode">08</div>
+          <div class="fcard"><div class="h">Settle</div><div class="d">Final settlement with the bank, full record kept</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:20px">
+      <div class="card deep"><div class="cap">Two approvals</div>
+        <p class="muted">Large projects need the head of operations, then the finance head. Nobody moves big money alone.</p></div>
+      <div class="card deep"><div class="cap">Everything recorded</div>
+        <p class="muted">Any case can be checked by a bank or an auditor at any time — who did what, and when.</p></div>
+      <div class="card deep"><div class="cap">Bulk work</div>
+        <p class="muted">Head office can move many farmers forward together, instead of one by one.</p></div>
+    </div>
+  </div>
+  <div class="foot"><div></div><div>07 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Safety ══════════════════════════════ -->
+<section class="slide" data-title="Safety">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">03 · Safety</div>
+  </div>
+  <div class="kicker">Four doors before any data is touched</div>
+  <h1>SAFE BY DESIGN, NOT BY LUCK</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="grid g4" style="gap:13px">
+      <div class="card" style="border-top:4px solid var(--orange);padding:18px 18px">
+        <div class="cap">Door 1</div>
+        <div style="font-size:14.5px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px">Are you logged in?</div>
+        <p class="small">No pass, no access. The pass expires after one day.</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--mint-d);padding:18px 18px">
+        <div class="cap">Door 2</div>
+        <div style="font-size:14.5px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px">Is this screen allowed?</div>
+        <p class="small">Every screen has its own permission. A farmer's record is not for everyone.</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--orange);padding:18px 18px">
+        <div class="cap">Door 3</div>
+        <div style="font-size:14.5px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px">What is your role?</div>
+        <p class="small">An officer sees his own farmers, a manager his region, head office everything.</p>
+      </div>
+      <div class="card" style="border-top:4px solid var(--mint-d);padding:18px 18px">
+        <div class="cap">Door 4</div>
+        <div style="font-size:14.5px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px">Is the data real?</div>
+        <p class="small">A wrong date or an impossible number is refused, with a clear message.</p>
+      </div>
+    </div>
+    <div class="card deep" style="margin-top:20px;border-left:4px solid var(--orange);padding:16px 18px">
+      <div class="cap">And after the doors</div>
+      <ul class="b" style="gap:6px">
+        <li>Every change is recorded — who changed what, and when. That is what makes a bank comfortable.</li>
+        <li>After every release, we print the full list of open doors and check that nothing private became public.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><div></div><div>08 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Investor platform ══════════════════════════════ -->
+<section class="slide" data-title="Investor platform">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">04 · Investor</div>
+  </div>
+  <div class="kicker">Two audiences, one product</div>
+  <h1>THE INVESTOR PLATFORM</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="grid g2" style="gap:16px">
+      <div class="card" style="border-top:4px solid var(--orange);padding:18px 20px">
+        <div class="h" style="font-size:14px;margin-bottom:12px">For the investor — a mobile app</div>
+        <ul class="b">
+          <li>Logs in with a code on the phone — no password to remember</li>
+          <li>Browses products, invests, follows returns and refunds</li>
+          <li>Pays in and out through a local payment gateway</li>
+          <li>Gets a phone notification when something happens</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:4px solid var(--mint-d);padding:18px 20px">
+        <div class="h" style="font-size:14px;margin-bottom:12px">For the business — an admin dashboard</div>
+        <ul class="b">
+          <li>Reviews each new investor: approve, or ask for a re-submit</li>
+          <li>Creates products, runs the returns, downloads reports</li>
+          <li>Follows the agent network: area → territory → agent → manager</li>
+          <li>Keeps every document and payment in one place</li>
+        </ul>
+      </div>
+    </div>
+    <div class="kpis k4" style="margin-top:18px">
+      <div class="kpi"><div class="v">13</div><div class="l">custom packages</div><div class="n">our own work</div></div>
+      <div class="kpi alt"><div class="v">24</div><div class="l">ready-made modules</div><div class="n">the base we build on</div></div>
+      <div class="kpi"><div class="v">170</div><div class="l">actions in total</div><div class="n">app · admin · shop</div></div>
+      <div class="kpi alt"><div class="v">3</div><div class="l">front doors</div><div class="n">app · admin · shop</div></div>
+    </div>
+    <p class="muted" style="margin-top:20px;padding-top:016px"><b style="color:var(--orange)">The honest part:</b> the ready-made base gave us login, admin screens and reports. It did not give us investments or returns — that is our own work.</p>
+  </div>
+  <div class="foot"><div></div><div>09 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Investor loop ══════════════════════════════ -->
+<section class="slide" data-title="Investor loop">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">04 · Investor</div>
+  </div>
+  <div class="kicker">From first application to reinvestment</div>
+  <h1>THE INVESTOR LOOP</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="loopflow">
+      <div class="lstep"><div class="num">01</div><div class="h">Onboard</div><div class="d">Application, then a review by our team</div></div>
+      <div class="larrow">▸</div>
+      <div class="lstep"><div class="num">02</div><div class="h">Products</div><div class="d">Browses products and projects</div></div>
+      <div class="larrow">▸</div>
+      <div class="lstep"><div class="num">03</div><div class="h">Cart</div><div class="d">Adds to a cart, like any online shop</div></div>
+      <div class="larrow">▸</div>
+      <div class="lstep"><div class="num">04</div><div class="h">Order</div><div class="d">Places the order</div></div>
+      <div class="larrow">▸</div>
+      <div class="lstep hot"><div class="num">05</div><div class="h">Pay</div><div class="d">Pays through the local gateway</div></div>
+      <div class="larrow">▸</div>
+      <div class="lstep hot"><div class="num">06</div><div class="h">Return</div><div class="d">The return is paid to the investor</div></div>
+      <div class="larrow">▸</div>
+      <div class="lstep hot"><div class="num">07</div><div class="h">Reinvest</div><div class="d">The return goes into a new product</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:20px;gap:16px">
+      <div class="card deep">
+        <div class="cap">Documents people trust</div>
+        <ul class="b">
+          <li>A yearly tax certificate for each investor</li>
+          <li>An order certificate signed by the CEO — downloadable for every order</li>
+          <li>Both generated from real order and return history, never typed by hand</li>
+        </ul>
+      </div>
+      <div class="card deep">
+        <div class="cap">Communication that runs itself</div>
+        <ul class="b">
+          <li>Automatic emails: receipt, order confirmation, return notice, certificate</li>
+          <li>A new product published sends a phone notification to every investor</li>
+          <li>Background jobs do this work, so nobody has to remember</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:20px;padding-top:016px">One loop, no dead ends: the return comes back in as a new investment — which is exactly what keeps the money working.</p>
+  </div>
+  <div class="foot"><div></div><div>10 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Connection ══════════════════════════════ -->
+<section class="slide" data-title="Connection">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">05 · Connection</div>
+  </div>
+  <div class="kicker">Today separate &middot; tomorrow three bridges</div>
+  <h1>TWO PRODUCTS, ONE ROADMAP</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 170px 1fr;align-items:center;gap:0">
+      <div class="card" style="padding:16px 18px">
+        <div class="cap">OGRO knows the field</div>
+        <p class="muted">What was applied for, what was delivered, what was collected, what was settled.</p>
+      </div>
+      <div style="display:flex;justify-content:center">
+        <div style="border:2px solid var(--red);border-radius:8px;padding:9px 8px;text-align:center;font-size:10.5px;font-weight:800;color:var(--red);letter-spacing:.06em;line-height:1.35">NO SHARED<br>DATABASE</div>
+      </div>
+      <div class="card" style="padding:16px 18px">
+        <div class="cap mint">Investor knows the money</div>
+        <p class="muted">Who invested, in which product, what return is due, what was already paid.</p>
+      </div>
+    </div>
+    <div class="cap" style="margin:22px 0 12px">Three bridges if the business needs them</div>
+    <div class="grid g3" style="gap:14px">
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:9px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11px;color:#fff">01</div>
+          <div style="font-size:12.6px;font-weight:800;color:#fff">Events</div>
+        </div>
+        <p class="small">When a settlement is complete in OGRO, a signed message tells the investor system, so payouts follow the real work.</p>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:9px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11px;color:#fff">02</div>
+          <div style="font-size:12.6px;font-weight:800;color:#fff">The numbers</div>
+        </div>
+        <p class="small">The four public figures come from one read-only connection, instead of fixed numbers.</p>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:9px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--g500);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:11px;color:#fff">03</div>
+          <div style="font-size:12.6px;font-weight:800;color:#fff">Separate users</div>
+        </div>
+        <p class="small">Farmers and investors are different people with different rules — we do not force one login.</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:20px;padding-top:016px"><b style="color:var(--orange)">Three rules for any bridge:</b> every message is signed · every message has an ID so nobody is paid twice · failed messages are retried.</p>
+  </div>
+  <div class="foot"><div></div><div>11 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ Go live ══════════════════════════════ -->
+<section class="slide" data-title="Go live">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">06 · Go live</div>
+  </div>
+  <div class="kicker">Two pipelines, one shared infrastructure</div>
+  <h1>HOW IT GOES LIVE</h1>
+  <div class="rule"></div>
+  <div class="body">
+    <div class="grid g2" style="gap:14px 16px">
+      <div class="card" style="border-left:4px solid var(--orange);padding:16px 18px">
+        <div class="h" style="margin-bottom:9px">The farm system</div>
+        <ul class="b" style="gap:5px"><li>Two containers: one for the engine, one for the screens</li><li>Both restart by themselves if they crash</li><li>Same behaviour on a laptop and on the real server</li></ul>
+      </div>
+      <div class="card" style="border-left:4px solid var(--mint-d);padding:16px 18px">
+        <div class="h" style="margin-bottom:9px">The investor system</div>
+        <ul class="b" style="gap:5px"><li>One bigger container with the web server</li><li>Background workers send emails and run return payments</li><li>Scheduled jobs do the routine work</li></ul>
+      </div>
+      <div class="card" style="border-left:4px solid var(--g500);padding:16px 18px">
+        <div class="h" style="margin-bottom:9px">The shared base</div>
+        <ul class="b" style="gap:5px"><li>A proxy, a cache, a message queue, and the databases</li><li>Both systems use it, and both are released separately</li><li>One problem never takes down the other product</li></ul>
+      </div>
+      <div class="card" style="border-left:4px solid var(--red);padding:16px 18px">
+        <div class="h" style="margin-bottom:9px">One honest gap</div>
+        <ul class="b" style="gap:5px"><li>No fully automatic release process yet</li><li>Database changes are applied by hand</li><li>The next fix: about two weeks of work</li></ul>
+      </div>
+    </div>
+    <div class="card deep" style="margin-top:20px;margin-bottom:0;border-left:4px solid var(--orange);display:flex;justify-content:space-between;align-items:center;padding:14px 20px">
+      <div style="font-family:var(--head);font-size:22px;color:#fff;letter-spacing:.01em">TWO SYSTEMS. ONE PLATFORM.</div>
+      <div class="small">One owner, from the first question to the first user.</div>
+    </div>
+  </div>
+  <div class="foot"><div></div><div>12 / 13</div></div>
+</section>
+
+<!-- ══════════════════════════════ The end ══════════════════════════════ -->
+<section class="slide endslide" data-title="The end">
+  <div class="top">
+    <div class="logo">WEGRO</div>
+    <div class="section">In closing · thank you for your time</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h1 class="huge">THE END</h1>
+    <div class="rule" style="margin:20px 0 18px"></div>
+    <div style="font-family:var(--head);font-size:26px;color:var(--orange);margin-bottom:26px">Two systems. One platform.</div>
+    <div class="grid g3" style="gap:14px">
+      <div class="endcard">
+        <div class="n">01</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;margin:4px 0 7px">OGRO</div>
+        <p class="small">Runs the whole farm money cycle — application, approval, inputs, visits, repayment, settlement — with control at every step.</p>
+      </div>
+      <div class="endcard">
+        <div class="n">02</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;margin:4px 0 7px">Investor platform</div>
+        <p class="small">Brings capital in and pays it back, with real documents and a full record behind every payment.</p>
+      </div>
+      <div class="endcard">
+        <div class="n">03</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;margin:4px 0 7px">One owner</div>
+        <p class="small">Understands the whole path: the database, the engine, the screens, and the release.</p>
+      </div>
+    </div>
+  </div>
+  <div class="card deep" style="border:1px solid var(--orange);display:flex;justify-content:space-between;align-items:center;padding:14px 20px">
+    <div style="font-size:15px;font-weight:800;color:#fff">Thank you — happy to go deeper on any slide.</div>
+    <div class="small">[your name] · [email] · [phone]</div>
+  </div>
+  <div class="foot"><div></div><div>13 / 13</div></div>
+</section>
+
+</div>
+
+<div id="notes"></div>
+<div id="hud">
+  <button class="btn" id="prev" title="Previous (←)">←</button>
+  <div class="dots" id="dots"></div>
+  <div class="count" id="count">01 / 13</div>
+  <button class="btn" id="next" title="Next (→)">→</button>
+  <button class="btn" id="btnnotes" title="Speaker notes (N)">Notes</button>
+  <button class="btn pri" id="btnmd" title="Markdown export (M)">Markdown →</button>
+</div>
+<div class="hint">← → navigate · N notes · M markdown · P print</div>
+
+<div id="mdwrap">
+  <div id="mdbar">
+    <h3>Slide markdown — paste into any PPTX agent</h3>
+    <button id="mdcopy">Copy all</button>
+    <button id="mdcopyone">Copy current slide</button>
+    <button id="mdsave" class="pri">Download .md</button>
+    <button id="mdclose">Close ✕</button>
+  </div>
+  <textarea id="mdtext" spellcheck="false"></textarea>
+</div>
+
+<script>
+const NOTES = ["SLIDE 01 of 13   ·   86 words   ·   0:45 at a slow pace, 0:41 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 0:45\n------------------------------------------------------------------------------\n\nGood morning. Thank you for your time. My name is [your name], and I am a senior full stack developer.\n\nToday I will show you one platform. We call it WEGRO. There is no code in this presentation, only plain language.\n\nWEGRO has two systems for one business. OGRO runs the farm work. WEGRO-INVESTOR brings money from investors, and pays it back.\n\nIn the next fourteen minutes: what each system does, how we keep it safe, and how the two connect.\n\nNext: what we will cover.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 02 of 13   ·   66 words   ·   0:34 at a slow pace, 0:32 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 1:19\n------------------------------------------------------------------------------\n\nFirst, the big picture, and the business problem behind it.\n\nThen OGRO, the farm system: what it does, and the eight steps of a farmer's loan. Then a short part about safety.\n\nAfter that, the investor platform, and the journey of one investor. Then how the two connect. And last, how the software goes live.\n\nPlease stop me at any time. There are no wrong questions.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 03 of 13   ·   160 words   ·   1:23 at a slow pace, 1:17 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 2:43\n------------------------------------------------------------------------------\n\nEverything starts with one problem. A small farmer needs money before the season. He needs seeds, fertiliser, and a drone team for spraying. It is a loan, and he pays it back after the harvest.\n\nMoney does not grow on the farm. It comes from people who want to invest.\n\nSo we built two systems.\n\nOGRO is for the farm. Three groups use it: the farmer, who needs the loan; the field officer, who visits the land; and the bank, which puts the money in. OGRO keeps one record for each farmer.\n\nWEGRO-INVESTOR is for the money side. Investors buy a product. Agents help them join, area by area. Later, the platform pays the return.\n\nHere is the important part. These two systems are separate products, and they do not share a database. So if one has a problem, the other keeps working.\n\nThe only link today is four numbers on the investor home screen.\n\nNext: OGRO in business numbers.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 04 of 13   ·   112 words   ·   0:58 at a slow pace, 0:54 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 3:41\n------------------------------------------------------------------------------\n\nLet me show you the size of OGRO, in business numbers, not technical numbers.\n\nThirty-six business areas. One for farmers, one for banks, one for stock, and so on. Thirty-six areas means the system covers the real work of a company, not a demonstration.\n\nThe loan has eight steps, and every farmer gets five field visits inside them. So the work on the ground is checked, not assumed.\n\nSixty-eight recorded data updates. Every change to the database is written down, tested, and applied in order. Data is never edited by hand.\n\nAnd four groups of users: the farmer, the field officer, the bank, and head office.\n\nNext: the technology, in plain words.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 05 of 13   ·   144 words   ·   1:15 at a slow pace, 1:09 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 4:56\n------------------------------------------------------------------------------\n\nThis slide is about the tools inside. You do not need to remember the names. I will only explain the job each part does.\n\nOn the left, the engine. It receives every request and answers it. It keeps the data in a strong database, the same family that many banks use. It gives each user a pass that expires after one day. It holds the rule book. And it sends the emails and the phone notifications.\n\nOn the right, what people see. One web application, so we do not build two apps for computer and phone. It installs on a phone like a normal app. It shows charts and maps. And every screen checks permissions first.\n\nWhy does this matter to you? These are standard tools that many developers know. You are not locked to one person.\n\nNext: what the system is made of.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 06 of 13   ·   92 words   ·   0:48 at a slow pace, 0:44 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 5:44\n------------------------------------------------------------------------------\n\nThe system is built in four big boxes.\n\nBox one: money and risk. Loans, agreements, repayments, deposits, and partner banks. This is the centre of the product.\n\nBox two: field work. Farmers, land records, surveys, visits, and notices to officers.\n\nBox three: stock and supplies. Products, warehouses, purchase orders, and sales.\n\nBox four: the platform. Users, roles, permissions, and notifications.\n\nWhy is this useful? Because the boxes are separate. A new feature changes one box, so the test is faster and the risk stays small.\n\nNext: the eight steps of a loan.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 07 of 13   ·   211 words   ·   1:50 at a slow pace, 1:41 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 7:34\n------------------------------------------------------------------------------\n\nThis is the heart of the system. If you remember one slide, remember this one.\n\nIt is the story of one farmer, from application to repayment. Eight steps.\n\nOne. He applies. A field officer visits him and records his land, his answers, and a credit score.\n\nTwo. We approve. The officer recommends, and a supervisor checks. If something is wrong, we reject the case, or block the farmer.\n\nThree. The loan agreement is written, approved, and stored. Corrections are recorded.\n\nFour. We pay out. The bank account is opened, the credit team approves, and the money moves.\n\nFive. The farmer receives his inputs: seeds, fertiliser, drone service. He confirms receipt.\n\nSix. Five visits to his land. One for identity, three to check the crop, one for the harvest. Each visit is a checkpoint.\n\nSeven. He pays back. Every payment is recorded. If he is late, the system adds a late fee.\n\nEight. We settle with the bank, and we keep a full record for the audit.\n\nTwo things to notice. Big projects need two approvals: the head of operations, then the finance head. Nobody moves large money alone. And everything is recorded, so a bank or an auditor can check any case at any time.\n\nNext: how we keep it safe.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 08 of 13   ·   106 words   ·   0:55 at a slow pace, 0:51 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 8:30\n------------------------------------------------------------------------------\n\nNow a short part about safety. Think of it as four doors.\n\nDoor one: are you logged in? If not, nothing opens.\n\nDoor two: is this screen allowed for you? A farmer's record is not for everyone.\n\nDoor three: what is your role? A field officer sees only his own farmers. A manager sees his region. Head office sees everything.\n\nDoor four: the server checks the data. If a date is wrong, the request is refused with a clear message.\n\nAnd after the doors, everything is recorded: who changed what, and when. That is why this system is comfortable for a bank.\n\nNext: the investor side.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 09 of 13   ·   176 words   ·   1:32 at a slow pace, 1:24 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 10:02\n------------------------------------------------------------------------------\n\nNow the second system. Different product, different user, and different technology.\n\nThere are two audiences.\n\nFor the investor, a mobile app. He logs in with a code on his phone, so there is no password to remember. He browses products, invests, and follows his returns. He also pays in and out through a local gateway.\n\nFor the business, an admin dashboard. Our team reviews each new investor, creates products, runs returns, and downloads reports. Agents work in areas, and each agent reports to a manager.\n\nThe numbers on top show the size. Thirteen packages are our own work. Twenty-four modules come from a ready-made e-commerce base, and we treat those as read-only. One hundred and seventy actions, behind three front doors: app, admin, and shop.\n\nOne decision to point out. We did not start from zero. The base already had login, admin screens, and reports, which saved us months. But the base gives you a shop. It does not give you investments or returns. That part is our own work.\n\nNext: the journey of one investor.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 10 of 13   ·   156 words   ·   1:21 at a slow pace, 1:15 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 11:23\n------------------------------------------------------------------------------\n\nThis is the journey of one investor, in seven steps.\n\nOne. He applies, and our team reviews the application.\n\nTwo. He browses the products. Three, he adds to a cart, like any online shop. Four, he places the order.\n\nFive. He pays through the gateway. The gateway confirms the payment directly to our server, so we trust the gateway, not the phone.\n\nSix. Later, he receives his return. Seven, he can reinvest it into a new product. This is the loop, and it is how the business grows.\n\nTwo details clients really like.\n\nFirst, documents. Every investor can download a yearly tax certificate, and an order certificate signed by the CEO. Both come from real history, never typed by hand.\n\nSecond, automatic communication. Every step sends an email: receipt, order confirmation, return notice, and certificate. And when we publish a new product, every investor gets a message on the phone.\n\nNext: where the two systems meet.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 11 of 13   ·   170 words   ·   1:29 at a slow pace, 1:22 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 12:52\n------------------------------------------------------------------------------\n\nThis is the question clients always ask, so let me answer it directly.\n\nToday, the two systems do not talk. No shared link. They are two products under one brand.\n\nIs that a problem? Not today. OGRO knows the field. The investor system knows the money.\n\nBut one day the business will ask a harder question. If the field says a farmer paid, should the investor see it?\n\nFor that day, we do not join the databases. That is the dangerous option. We build three clean bridges.\n\nOne: events. When a settlement is complete in OGRO, we send a signed message to the investor system, so payouts follow the real work.\n\nTwo: the four public numbers come from one read-only connection, instead of fixed numbers.\n\nThree: we keep the users separate, because farmers and investors have different rules.\n\nAnd three rules for those bridges. Every message is signed. Every message has an ID, so nobody is paid twice. And a failed message is sent again.\n\nNext: how it goes live.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 12 of 13   ·   127 words   ·   1:06 at a slow pace, 1:01 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 13:58\n------------------------------------------------------------------------------\n\nLast part: how this software goes live and stays alive.\n\nWe use containers. A container is a box with the software and everything it needs inside. It behaves the same on a laptop, a test server, and the real server. So \"it worked on my machine\" stops being an excuse.\n\nThe farm system has two containers, and they restart if they crash. The investor system has one bigger container, with the web server and the background workers. Those workers send the emails and run the return payments.\n\nOne honest point. There is no fully automatic release process yet, and database changes are applied by hand. That is my next fix: about two weeks of work, and it removes a class of human mistakes.\n\nNext: the last slide.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle.", "SLIDE 13 of 13   ·   68 words   ·   0:35 at a slow pace, 0:33 at a normal pace\nPlain language only. Pause at every full stop.\nClock when this slide ends: 14:33\n------------------------------------------------------------------------------\n\nTwo systems, one platform.\n\nIf you remember three things, remember these.\n\nOne: OGRO runs the whole farm money cycle, with control at every step.\n\nTwo: the investor platform brings capital in and pays it back, with real documents and a full record.\n\nThree: I understand the whole path, from the database to the screen to the release.\n\nThank you. I am happy to go deeper on any slide.\n\n------------------------------------------------------------------------------\nShort of time? Cut the second half of slide 05 and slide 12. Never cut slide 07, the loan cycle."];
+const MD = ["## Slide 01 — Two systems. One platform.\n\n**Layout:** hero / title slide — plain language, no code  \n**Section label:** Title  \n**Kicker:** A plain-language briefing · November 2026  \n**Headline:** TWO SYSTEMS. ONE PLATFORM.\n\n**Speaking time:** 14:33 · 86 words · clock 0:45\n\n- Subtitle: how WEGRO runs the farm business and pays its investors — explained without technical words\n- Chips: `12 slides` · `about 14 minutes` · `no code required`\n- Right rail: 01 The big picture · 02 OGRO, the farm system · 03 How we keep it safe · 04 The investor platform · 05 Where they meet · 06 How it goes live\n- Footer: every number in this deck is counted from the real software, not estimated\n\n**Script**\n\nGood morning. Thank you for your time. My name is [your name], and I am a senior full stack developer.\n\nToday I will show you one platform. We call it WEGRO. There is no code in this presentation, only plain language.\n\nWEGRO has two systems for one business. OGRO runs the farm work. WEGRO-INVESTOR brings money from investors, and pays it back.\n\nIn the next fourteen minutes: what each system does, how we keep it safe, and how the two connect.\n\nNext: what we will cover.", "## Slide 02 — What we will cover\n\n**Layout:** 2 × 3 numbered cards with timings  \n**Section label:** Agenda  \n**Kicker:** 14 minutes · 12 slides + closing  \n**Headline:** WHAT WE WILL COVER\n\n**Speaking time:** 13:49 · 66 words · clock 1:19\n\n| # | Part | What you will see | Time |\n|---|---|---|---|\n| 01 | The big picture | The business problem, and why there are two systems | 1:30 |\n| 02 | OGRO, the farm system | Size in business numbers · what it is made of · the 8-step loan cycle | 4:45 |\n| 03 | How we keep it safe | Four doors, and a full record of every change | 1:00 |\n| 04 | The investor platform | The app, the admin team, and the journey of one investor | 3:00 |\n| 05 | Where they meet | Today separate, and the three bridges for tomorrow | 1:30 |\n| 06 | How it goes live | Containers, one honest gap, and the closing | 1:15 |\n\n**Script**\n\nFirst, the big picture, and the business problem behind it.\n\nThen OGRO, the farm system: what it does, and the eight steps of a farmer's loan. Then a short part about safety.\n\nAfter that, the investor platform, and the journey of one investor. Then how the two connect. And last, how the software goes live.\n\nPlease stop me at any time. There are no wrong questions.", "## Slide 03 — The big picture\n\n**Layout:** two system panels + centre 'no shared' marker + bottom callout  \n**Section label:** 01 · Big picture  \n**Kicker:** One brand, two products  \n**Headline:** TWO SYSTEMS, ONE BUSINESS\n\n**Speaking time:** 13:14 · 160 words · clock 2:43\n\n**OGRO — the farm system**\n- Three users: the farmer, who needs the loan; the field officer, who visits the land; the bank, which puts the money in\n- One record per farmer: the loan, the inputs, the visits, every payment\n\n**WEGRO-INVESTOR — the money system**\n- Three users: the investor, the agent who brings him in, and the admin team\n- Raises the money, pays the returns, runs the agent network\n\n**Centre marker:** no shared database · no shared team · one can fail without stopping the other\n\n**Bottom callout:** the only link today is four public numbers on the investor home screen\n\n**Script**\n\nEverything starts with one problem. A small farmer needs money before the season. He needs seeds, fertiliser, and a drone team for spraying. It is a loan, and he pays it back after the harvest.\n\nMoney does not grow on the farm. It comes from people who want to invest.\n\nSo we built two systems.\n\nOGRO is for the farm. Three groups use it: the farmer, who needs the loan; the field officer, who visits the land; and the bank, which puts the money in. OGRO keeps one record for each farmer.\n\nWEGRO-INVESTOR is for the money side. Investors buy a product. Agents help them join, area by area. Later, the platform pays the return.\n\nHere is the important part. These two systems are separate products, and they do not share a database. So if one has a problem, the other keeps working.\n\nThe only link today is four numbers on the investor home screen.\n\nNext: OGRO in business numbers.", "## Slide 04 — OGRO in business numbers\n\n**Layout:** 5 KPI tiles + 3 columns + closing line  \n**Section label:** 02 · OGRO  \n**Kicker:** The farm system · size and depth  \n**Headline:** OGRO AT A GLANCE\n\n**Speaking time:** 11:51 · 112 words · clock 3:41\n\n**Five numbers:** 36 business areas · 8 steps in the loan cycle · 5 field visits per farmer · 68 recorded data updates · 4 groups of users\n\n**Who uses it** — the farmer, the field officer, the bank, and head office.\n**What it covers** — from the land and the survey, through the loan and the inputs, to the harvest and the final settlement.\n**Why the numbers matter** — 36 areas means real company work, not a demo. 68 recorded updates means the data is never changed by hand.\n\n**One line to remember:** the loan cycle is the centre, and everything else supports it.\n\n**Script**\n\nLet me show you the size of OGRO, in business numbers, not technical numbers.\n\nThirty-six business areas. One for farmers, one for banks, one for stock, and so on. Thirty-six areas means the system covers the real work of a company, not a demonstration.\n\nThe loan has eight steps, and every farmer gets five field visits inside them. So the work on the ground is checked, not assumed.\n\nSixty-eight recorded data updates. Every change to the database is written down, tested, and applied in order. Data is never edited by hand.\n\nAnd four groups of users: the farmer, the field officer, the bank, and head office.\n\nNext: the technology, in plain words.", "## Slide 05 — The tools inside, in plain words\n\n**Layout:** two concern/choice tables (backend, frontend) + one-line takeaway  \n**Section label:** 02 · OGRO  \n**Kicker:** What each part does — no names to remember  \n**Headline:** TECHNOLOGY, EXPLAINED SIMPLY\n\n**Speaking time:** 10:52 · 144 words · clock 4:56\n\n**The engine (server side)**\n| What it does | How |\n|---|---|\n| Answers every request | The engine of the system, built on a standard framework |\n| Keeps the data | PostgreSQL, the same family of database many banks use |\n| Gives a short pass | A login pass that expires after one day |\n| Holds the rule book | Roles and permissions for every screen |\n| Sends news | Emails, push messages, and scheduled jobs |\n\n**What people see (screen side)**\n| What it does | How |\n|---|---|\n| One app for all screens | The same web app works on computer and phone |\n| Installs like an app | It can be added to a phone home screen |\n| Shows charts and maps | Dashboards, maps for the field, and reports |\n| Fast while working | Data is kept for a moment, so screens feel quick |\n| Hides what you cannot use | A user only sees the part that belongs to him |\n\n**Takeaway:** these are standard, well-known tools — many developers know them, so you are not locked to one person.\n\n**Script**\n\nThis slide is about the tools inside. You do not need to remember the names. I will only explain the job each part does.\n\nOn the left, the engine. It receives every request and answers it. It keeps the data in a strong database, the same family that many banks use. It gives each user a pass that expires after one day. It holds the rule book. And it sends the emails and the phone notifications.\n\nOn the right, what people see. One web application, so we do not build two apps for computer and phone. It installs on a phone like a normal app. It shows charts and maps. And every screen checks permissions first.\n\nWhy does this matter to you? These are standard tools that many developers know. You are not locked to one person.\n\nNext: what the system is made of.", "## Slide 06 — What OGRO is made of\n\n**Layout:** 2 × 2 business-area cards + footnote  \n**Section label:** 02 · OGRO  \n**Kicker:** Four big boxes, not thirty-six  \n**Headline:** FOUR BOXES, ONE PRODUCT\n\n**Speaking time:** 9:37 · 92 words · clock 5:44\n\n**Money and risk** — loans, agreements, repayments, deposits, partner banks. The centre of the product.\n\n**Field work** — farmers, land records, surveys, field visits, notices to officers.\n\n**Stock and supplies** — products, warehouses, purchase orders, sales.\n\n**The platform** — users, roles, permissions, notifications.\n\n**Why it is built this way:** the boxes are separate. A new feature changes one box, so the test is faster and the risk stays small.\n\n**Script**\n\nThe system is built in four big boxes.\n\nBox one: money and risk. Loans, agreements, repayments, deposits, and partner banks. This is the centre of the product.\n\nBox two: field work. Farmers, land records, surveys, visits, and notices to officers.\n\nBox three: stock and supplies. Products, warehouses, purchase orders, and sales.\n\nBox four: the platform. Users, roles, permissions, and notifications.\n\nWhy is this useful? Because the boxes are separate. A new feature changes one box, so the test is faster and the risk stays small.\n\nNext: the eight steps of a loan.", "## Slide 07 — The eight steps of a loan\n\n**Layout:** 8-node timeline + 3 footnote cards  \n**Section label:** 02 · OGRO  \n**Kicker:** The heart of the system — one farmer, start to finish  \n**Headline:** THE LOAN CYCLE\n\n**Speaking time:** 8:49 · 211 words · clock 7:34\n\n| Step | Name | What happens |\n|---|---|---|\n| 01 | Apply | The officer visits and records land, answers, credit score |\n| 02 | Approve | Officer recommends, supervisor checks; reject or block |\n| 03 | Agreement | Written, approved, stored — corrections are recorded |\n| 04 | Pay out | Bank account opened, credit team approves, money moves |\n| 05 | Inputs | Seeds, fertiliser, drone service — the farmer confirms receipt |\n| 06 | Visits | Identity + three crop checks + harvest, each a checkpoint |\n| 07 | Repay | Every payment recorded; late fees added automatically |\n| 08 | Settle | Final settlement with the bank, full record kept |\n\n**Two approvals** — large projects need the head of operations, then the finance head. Nobody moves big money alone.\n**Everything recorded** — any case can be checked by a bank or an auditor at any time.\n**Bulk work** — head office can move many farmers forward together, instead of one by one.\n\n**Script**\n\nThis is the heart of the system. If you remember one slide, remember this one.\n\nIt is the story of one farmer, from application to repayment. Eight steps.\n\nOne. He applies. A field officer visits him and records his land, his answers, and a credit score.\n\nTwo. We approve. The officer recommends, and a supervisor checks. If something is wrong, we reject the case, or block the farmer.\n\nThree. The loan agreement is written, approved, and stored. Corrections are recorded.\n\nFour. We pay out. The bank account is opened, the credit team approves, and the money moves.\n\nFive. The farmer receives his inputs: seeds, fertiliser, drone service. He confirms receipt.\n\nSix. Five visits to his land. One for identity, three to check the crop, one for the harvest. Each visit is a checkpoint.\n\nSeven. He pays back. Every payment is recorded. If he is late, the system adds a late fee.\n\nEight. We settle with the bank, and we keep a full record for the audit.\n\nTwo things to notice. Big projects need two approvals: the head of operations, then the finance head. Nobody moves large money alone. And everything is recorded, so a bank or an auditor can check any case at any time.\n\nNext: how we keep it safe.", "## Slide 08 — How we keep it safe\n\n**Layout:** four door cards in a row + closing band  \n**Section label:** 03 · Safety  \n**Kicker:** Four doors before any data is touched  \n**Headline:** SAFE BY DESIGN, NOT BY LUCK\n\n**Speaking time:** 6:59 · 106 words · clock 8:30\n\n**Door 1 — Are you logged in?** No pass, no access.\n**Door 2 — Is this screen allowed for you?** Each screen has its own permission.\n**Door 3 — What is your role?** A field officer sees his own farmers; a manager sees his region; head office sees everything.\n**Door 4 — Is the data real?** Wrong date or impossible number, and the server refuses with a clear message.\n\n**And after the doors:** every change is recorded — who changed what, and when. That is what makes a bank comfortable.\n\n**The habit that protects you:** after every release we print the full list of open doors and check that nothing private became public.\n\n**Script**\n\nNow a short part about safety. Think of it as four doors.\n\nDoor one: are you logged in? If not, nothing opens.\n\nDoor two: is this screen allowed for you? A farmer's record is not for everyone.\n\nDoor three: what is your role? A field officer sees only his own farmers. A manager sees his region. Head office sees everything.\n\nDoor four: the server checks the data. If a date is wrong, the request is refused with a clear message.\n\nAnd after the doors, everything is recorded: who changed what, and when. That is why this system is comfortable for a bank.\n\nNext: the investor side.", "## Slide 09 — The investor platform\n\n**Layout:** two audience cards (investor / business) + 4 KPI tiles  \n**Section label:** 04 · Investor  \n**Kicker:** Two audiences, one product  \n**Headline:** THE INVESTOR PLATFORM\n\n**Speaking time:** 6:04 · 176 words · clock 10:02\n\n**For the investor — a mobile app**\n- Login with a code on the phone, no password to remember\n- Browse products, invest, follow returns and refunds\n- Pay in and out through a local payment gateway\n- Push notifications when something happens\n\n**For the business — an admin dashboard**\n- Review each new investor: approve or ask for a re-submit\n- Create products, run returns, download reports\n- Follow the agent network: area → territory → agent → manager\n\n**Four numbers:** 13 custom packages · 24 ready-made modules · 170 actions in total · 3 front doors (app, admin, shop)\n\n**Script**\n\nNow the second system. Different product, different user, and different technology.\n\nThere are two audiences.\n\nFor the investor, a mobile app. He logs in with a code on his phone, so there is no password to remember. He browses products, invests, and follows his returns. He also pays in and out through a local gateway.\n\nFor the business, an admin dashboard. Our team reviews each new investor, creates products, runs returns, and downloads reports. Agents work in areas, and each agent reports to a manager.\n\nThe numbers on top show the size. Thirteen packages are our own work. Twenty-four modules come from a ready-made e-commerce base, and we treat those as read-only. One hundred and seventy actions, behind three front doors: app, admin, and shop.\n\nOne decision to point out. We did not start from zero. The base already had login, admin screens, and reports, which saved us months. But the base gives you a shop. It does not give you investments or returns. That part is our own work.\n\nNext: the journey of one investor.", "## Slide 10 — The journey of one investor\n\n**Layout:** 7-step loop flow + 2 detail cards  \n**Section label:** 04 · Investor  \n**Kicker:** From first application to reinvestment  \n**Headline:** THE INVESTOR LOOP\n\n**Speaking time:** 4:32 · 156 words · clock 11:23\n\n| Step | What happens |\n|---|---|\n| 01 Onboard | Application submitted, reviewed by the team |\n| 02 Products | Browse investment products and projects |\n| 03 Cart | Add products to a cart |\n| 04 Order | Place the order |\n| 05 Pay | Payment through the local gateway, confirmed by the gateway itself |\n| 06 Return | The return is paid to the investor |\n| 07 Reinvest | The return can go into a new product — the loop closes |\n\n**Documents people trust:** a yearly tax certificate, and an order certificate signed by the CEO — both generated from real history, never typed by hand.\n**Automatic communication:** a receipt, an order confirmation, a return notice, and the certificate — by email. And a phone notification to every investor when a new product is published.\n\n**Script**\n\nThis is the journey of one investor, in seven steps.\n\nOne. He applies, and our team reviews the application.\n\nTwo. He browses the products. Three, he adds to a cart, like any online shop. Four, he places the order.\n\nFive. He pays through the gateway. The gateway confirms the payment directly to our server, so we trust the gateway, not the phone.\n\nSix. Later, he receives his return. Seven, he can reinvest it into a new product. This is the loop, and it is how the business grows.\n\nTwo details clients really like.\n\nFirst, documents. Every investor can download a yearly tax certificate, and an order certificate signed by the CEO. Both come from real history, never typed by hand.\n\nSecond, automatic communication. Every step sends an email: receipt, order confirmation, return notice, and certificate. And when we publish a new product, every investor gets a message on the phone.\n\nNext: where the two systems meet.", "## Slide 11 — Where the two systems meet\n\n**Layout:** two system cards + 'no link' marker + 3 bridge cards + rules line  \n**Section label:** 05 · Connection  \n**Kicker:** Today separate · tomorrow three bridges  \n**Headline:** TWO PRODUCTS, ONE ROADMAP\n\n**Speaking time:** 3:10 · 170 words · clock 12:52\n\n**OGRO knows the field:** what was applied for, what was delivered, what was collected, what was settled.\n**The investor system knows the money:** who invested, in which product, what return is due, what was paid.\n**Centre marker:** no shared database — and that is a choice, not an accident\n\n**Bridge 01 — events:** when a settlement is complete in OGRO, a signed message tells the investor system, so payouts follow the real work.\n**Bridge 02 — the numbers:** the four public figures can come from a read-only connection, instead of fixed numbers.\n**Bridge 03 — separate users:** farmers and investors are different people with different rules; we do not force one login.\n\n**Three rules for any bridge:** every message is signed · every message has an ID so nobody is paid twice · failed messages are retried automatically.\n\n**Script**\n\nThis is the question clients always ask, so let me answer it directly.\n\nToday, the two systems do not talk. No shared link. They are two products under one brand.\n\nIs that a problem? Not today. OGRO knows the field. The investor system knows the money.\n\nBut one day the business will ask a harder question. If the field says a farmer paid, should the investor see it?\n\nFor that day, we do not join the databases. That is the dangerous option. We build three clean bridges.\n\nOne: events. When a settlement is complete in OGRO, we send a signed message to the investor system, so payouts follow the real work.\n\nTwo: the four public numbers come from one read-only connection, instead of fixed numbers.\n\nThree: we keep the users separate, because farmers and investors have different rules.\n\nAnd three rules for those bridges. Every message is signed. Every message has an ID, so nobody is paid twice. And a failed message is sent again.\n\nNext: how it goes live.", "## Slide 12 — How it goes live\n\n**Layout:** 2 × 2 ops cards + closing band  \n**Section label:** 06 · Go live  \n**Kicker:** Two pipelines, one shared infrastructure  \n**Headline:** HOW IT GOES LIVE\n\n**Speaking time:** 1:42 · 127 words · clock 13:58\n\n**The farm system** — two containers: one for the engine, one for the screens. Both restart by themselves if they crash.\n**The investor system** — one bigger container with the web server and the background workers that send emails and run the return payments.\n**The shared base** — a proxy, a cache, a message queue, and the databases. Both systems use it, and both are still released separately.\n**One honest gap** — no fully automatic release process yet, and database changes are applied by hand. That is the next fix: about two weeks of work.\n\n**Closing line:** two systems, one platform — and one owner who can take a feature from the first question to the first user.\n\n**Script**\n\nLast part: how this software goes live and stays alive.\n\nWe use containers. A container is a box with the software and everything it needs inside. It behaves the same on a laptop, a test server, and the real server. So \"it worked on my machine\" stops being an excuse.\n\nThe farm system has two containers, and they restart if they crash. The investor system has one bigger container, with the web server and the background workers. Those workers send the emails and run the return payments.\n\nOne honest point. There is no fully automatic release process yet, and database changes are applied by hand. That is my next fix: about two weeks of work, and it removes a class of human mistakes.\n\nNext: the last slide.", "## Slide 13 — The end\n\n**Layout:** closing slide — THE END, three takeaways, thank you  \n**Section label:** The end  \n**Kicker:** Thank you  \n**Headline:** THE END\n\n**Speaking time:** 0:35 · 68 words · clock 14:33\n\n**Two systems. One platform.**\n\n**Three things to remember:**\n1. OGRO runs the whole farm money cycle — application, approval, inputs, visits, repayment, settlement — with control at every step.\n2. The investor platform brings capital in and pays it back, with real documents and a full record.\n3. One owner understands the whole path: database, engine, screens, and release.\n\n**Contact:** [your name] · [email] · [phone] — happy to go deeper on any slide.\n\n**Script**\n\nTwo systems, one platform.\n\nIf you remember three things, remember these.\n\nOne: OGRO runs the whole farm money cycle, with control at every step.\n\nTwo: the investor platform brings capital in and pays it back, with real documents and a full record.\n\nThree: I understand the whole path, from the database to the screen to the release.\n\nThank you. I am happy to go deeper on any slide."];
+
+const slides = [...document.querySelectorAll('.slide')];
+const notesEl = document.getElementById('notes');
+const dotsEl  = document.getElementById('dots');
+const countEl = document.getElementById('count');
+const bar     = document.getElementById('bar');
+const mdArea  = document.getElementById('mdtext');
+const mdWrap  = document.getElementById('mdwrap');
+let cur = 0;
+
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(i){
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+  [...dotsEl.children].forEach((d, k) => d.classList.toggle('on', k === cur));
+  countEl.textContent = String(cur + 1).padStart(2, '0') + ' / ' + slides.length;
+  bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+  notesEl.textContent = NOTES[cur] || '(no notes for this slide)';
+  mdArea.value = MD[cur] || '';
+}
+
+function toggleMd(on){ mdWrap.classList.toggle('show', on); if (on) mdArea.value = MD[cur] || ''; }
+
+document.getElementById('next').onclick = () => go(cur + 1);
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.getElementById('btnnotes').onclick = () => notesEl.classList.toggle('show');
+document.getElementById('btnmd').onclick = () => toggleMd(true);
+document.getElementById('mdclose').onclick = () => toggleMd(false);
+document.getElementById('mdcopyone').onclick = async () => {
+  try { await navigator.clipboard.writeText(mdArea.value); } catch(e) {}
+  const b = document.getElementById('mdcopyone'); b.textContent = 'Copied';
+  setTimeout(() => b.textContent = 'Copy current slide', 1400);
+};
+document.getElementById('mdcopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(MD.join('\n\n---\n\n')); } catch(e) {}
+  const b = document.getElementById('mdcopy'); b.textContent = 'Copied';
+  setTimeout(() => b.textContent = 'Copy all', 1400);
+};
+document.getElementById('mdsave').onclick = () => {
+  const blob = new Blob([MD.join('\n\n---\n\n')], {type: 'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'WEGRO_DECK_SLIDES.md';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+function fit(){
+  const st = document.getElementById('stage');
+  const s = Math.min((window.innerWidth - 24) / 1300, (window.innerHeight - 92) / 745);
+  st.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fit); fit();
+
+document.addEventListener('keydown', e => {
+  if (mdWrap.classList.contains('show')) { if (e.key === 'Escape') toggleMd(false); return; }
+  if (['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  if (e.key === 'Home') go(0);
+  if (e.key === 'End') go(slides.length - 1);
+  if (e.key.toLowerCase() === 'n') notesEl.classList.toggle('show');
+  if (e.key.toLowerCase() === 'm') toggleMd(true);
+  if (e.key.toLowerCase() === 'p') window.print();
+});
+
+go(0);
+
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a56550f36ff8c3a2',t:'MTc5Mzk4MDg3OQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a56550f36ff8c3a2',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
