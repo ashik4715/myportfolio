@@ -21,6 +21,15 @@ const VERSIONS = [
       'The presentation build with speaker notes, an embedded markdown panel and animated slide transitions.',
     features: ['Speaker notes', 'Markdown panel', 'Animations'],
   },
+  {
+    id: 'v3',
+    tab: 'V3 · Non-Technical',
+    file: 'sys-architecture-deck-v3.html',
+    title: 'Version 3 — Non-Technical Deck',
+    blurb:
+      'The plain-language business deck: no code, no terminology — the two systems explained for any audience.',
+    features: ['Plain language', 'Business focus', 'No jargon'],
+  },
 ];
 
 const SysArchitecturePage = () => {
