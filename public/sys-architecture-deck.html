@@ -93,7 +93,7 @@
       <b style="color:#fff">One</b> for <b style="color:var(--orange)">Wego-Investor</b> — Investor Backend &amp; APP</p>
     </div>
     <div class="tag">wegro.global · architecture overview · nov 2026</div>
-    <div class="pageno">01 / 16</div>
+    <div class="pageno">01 / 17</div>
   </section>
 
   <!-- 2 ECOSYSTEM -->
@@ -113,7 +113,7 @@
       </div>
     </div>
     <div class="card" style="margin-top:16px;text-align:center"><p style="font-size:17px"><b style="color:var(--orange)">Bridge (business-level, no shared DB):</b> field settlements ↔ investor payouts · aggregate impact stats flow to the Investor APP</p></div>
-    <div class="tag">ecosystem</div><div class="pageno">02 / 16</div>
+    <div class="tag">ecosystem</div><div class="pageno">02 / 17</div>
   </section>
 
   <!-- 3 OGRO WHAT -->
@@ -128,7 +128,7 @@
       <div class="card"><div class="num o">5</div><h3>Money Flow</h3><p>Collections, deposits, bank settlements, late fees &amp; penalties, corrections, approval queues.</p></div>
       <div class="card"><div class="num o">6</div><h3>Public Website CMS</h3><p>Awards, banners, FAQs, jobs, partners, testimonials, newspapers, home backgrounds.</p></div>
     </div>
-    <div class="tag">ogro · domain</div><div class="pageno">03 / 16</div>
+    <div class="tag">ogro · domain</div><div class="pageno">03 / 17</div>
   </section>
 
   <!-- 4 OGRO STACK -->
@@ -155,7 +155,7 @@
         <tr><td>Conventions</td><td>one <span class="mono">&lt;domain&gt;Api</span> slice per backend module</td></tr></table>
       </div>
     </div>
-    <div class="tag">ogro · stack</div><div class="pageno">04 / 16</div>
+    <div class="tag">ogro · stack</div><div class="pageno">04 / 17</div>
   </section>
 
   <!-- 5 OGRO BACKEND MAP -->
@@ -170,31 +170,32 @@
       <div class="card"><h3>Platform</h3><div><span class="chip">websocket</span><span class="chip">firebase</span><span class="chip">notifications</span><span class="chip">email</span><span class="chip">file-upload</span><span class="chip">export</span><span class="chip">activity-log</span><span class="chip">system-settings</span></div></div>
       <div class="card"><h3>Website CMS</h3><div><span class="chip">awards</span><span class="chip">banners</span><span class="chip">faqs</span><span class="chip">home-backgrounds</span><span class="chip">home-newspapers</span><span class="chip">jobs</span><span class="chip">partners</span><span class="chip">team-members</span><span class="chip">testimonials</span></div></div>
     </div>
-    <div class="tag">ogro · backend</div><div class="pageno">05 / 16</div>
+    <div class="tag">ogro · backend</div><div class="pageno">05 / 17</div>
   </section>
 
   <!-- 6 LOAN LIFECYCLE -->
+    <!-- 6 LOAN LIFECYCLE -->
   <section class="slide">
     <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
-    <h2>The Loan <span class="accent">Lifecycle</span> — Ogro's core flow</h2>
-    <div class="timeline" style="flex:1">
-      <div class="trow">
-        <div class="tnode"><div class="c">01</div><div class="t"><b>Farmer applies</b>Project application created (survey + land + credit)</div></div>
-        <div class="tnode"><div class="c">02</div><div class="t"><b>Bank onboarding</b>Partner bank selected · account opened · CRM approval</div></div>
-        <div class="tnode"><div class="c">03</div><div class="t"><b>Loan agreement</b>Signed → approved → disbursed (input bundle issued)</div></div>
-        <div class="tnode"><div class="c">04</div><div class="t"><b>Field visits</b>Identity · crop-health ×3 · harvest — officer uploads proof</div></div>
-        <div class="tnode"><div class="c">05</div><div class="t"><b>Collections</b>Fees &amp; installments → approved → deposited at bank</div></div>
-        <div class="tnode"><div class="c">06</div><div class="t"><b>Settlement</b>Bank settlement runs · penalties &amp; late fees settled</div></div>
-      </div>
+    <h2>The Loan <span class="accent">Lifecycle</span> — ProjectApplication, the core state machine</h2>
+    <div class="flowwrap">
+      <div class="fstep"><div class="fnode">01</div><div class="fcard"><b>Apply</b><span>Farmer submits to a project: land, survey answers, credit score</span></div></div>
+      <div class="fstep"><div class="fnode">02</div><div class="fcard"><b>Approve</b><span>Field officer recommends, supervisor checks; reject / blacklist paths</span></div></div>
+      <div class="fstep"><div class="fnode">03</div><div class="fcard"><b>Agreement</b><span>Loan agreement drafted, approved, stored; corrections tracked</span></div></div>
+      <div class="fstep"><div class="fnode">04</div><div class="fcard"><b>Disburse</b><span>Bank account opened, CRM approval, funds move to farmer</span></div></div>
+      <div class="fstep"><div class="fnode">05</div><div class="fcard"><b>Inputs</b><span>Input bundle selected, acknowledged, distributed to farmer</span></div></div>
+      <div class="fstep"><div class="fnode">06</div><div class="fcard"><b>Visits</b><span>Identity + crop-health ×3 + harvest — each a completed checkpoint</span></div></div>
+      <div class="fstep"><div class="fnode">07</div><div class="fcard"><b>Collect</b><span>Collections &amp; deposits recorded; late fees and penalties applied</span></div></div>
+      <div class="fstep"><div class="fnode">08</div><div class="fcard"><b>Settle</b><span>Settlement run to partner bank; full audit log kept</span></div></div>
     </div>
-    <div class="kpi">
-      <div class="box"><div class="big">~30</div><div class="lbl">endpoints on project-applications</div></div>
-      <div class="box"><div class="big">5</div><div class="lbl">stage visits with mark-as-completed</div></div>
-      <div class="box"><div class="big">17</div><div class="lbl">bank-panel bulk workflow actions</div></div>
-      <div class="box"><div class="big">COO→CFO</div><div class="lbl">dual approval on every project</div></div>
+    <div class="grid g3" style="flex:1;margin-top:14px">
+      <div class="card"><div class="cap">Dual sign-off</div><p>Every project needs <b style="color:#fff">COO approval, then CFO approval</b> before any money moves — nobody moves large money alone.</p></div>
+      <div class="card"><div class="cap">Everything is logged</div><p>ProjectApplicationLog plus corrections on agreements, collections and deposits — ready for a bank audit at any time.</p></div>
+      <div class="card"><div class="cap">Bank-side board</div><p><span class="mono">/bank-panel</span> runs the whole borrower pipeline in bulk — <b style="color:#fff">11 bulk PATCH actions</b> + tracking sheet.</p></div>
     </div>
-    <div class="tag">ogro · lifecycle</div><div class="pageno">06 / 16</div>
+    <div class="tag">ogro · lifecycle</div><div class="pageno">06 / 17</div>
   </section>
+
 
   <!-- 7 FRONTEND -->
   <section class="slide">
@@ -211,7 +212,7 @@
         • Signature screens: BankTrackingSheet, BankPanel, InputPanel, ProjectGanttChart, DisbursementPendingApprovals, EBL bank PDF</p>
       </div>
     </div>
-    <div class="tag">ogro · frontend</div><div class="pageno">07 / 16</div>
+    <div class="tag">ogro · frontend</div><div class="pageno">07 / 17</div>
   </section>
 
   <!-- 8 OGRO API -->
@@ -230,7 +231,7 @@
       <tr><td>Platform</td><td class="mono">/notifications/unread-count · /firebase-push-notification · /activity-logs</td></tr>
     </table>
     <p style="margin-top:8px">Full machine-readable catalog: <span class="mono">API_SURFACE_CATALOG.md</span> · live schema at <span class="mono">/docs</span></p>
-    <div class="tag">ogro · api</div><div class="pageno">08 / 16</div>
+    <div class="tag">ogro · api</div><div class="pageno">08 / 17</div>
   </section>
 
   <!-- 9 INVESTOR WHAT -->
@@ -253,7 +254,7 @@
       <div class="box"><div class="big">170</div><div class="lbl">route entries total</div></div>
       <div class="box"><div class="big">3</div><div class="lbl">surfaces: app · admin · shop</div></div>
     </div>
-    <div class="tag">investor · domain</div><div class="pageno">09 / 16</div>
+    <div class="tag">investor · domain</div><div class="pageno">09 / 17</div>
   </section>
 
   <!-- 10 INVESTOR ARCH -->
@@ -266,8 +267,34 @@
       <div class="card"><h3>Payments</h3><p class="mono">Polygon\Aamarpay — success/cancel/fail/IPN callback routes</p></div>
       <div class="card"><h3>Platform glue</h3><p class="mono">Polygon\Wegro — service provider + Stats DTO (impact numbers)</p></div>
     </div>
-    <div class="tag">investor · architecture</div><div class="pageno">10 / 16</div>
+    <div class="tag">investor · architecture</div><div class="pageno">10 / 17</div>
   </section>
+  <!-- 11 INVESTOR LIFECYCLE -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>The Investor <span class="accent">Loop</span> — onboarding to reinvestment</h2>
+    <div class="loopflow">
+      <div class="lstep"><b>01 Onboard</b><span>Application submitted &amp; reviewed by ops</span></div><div class="larrow">→</div>
+      <div class="lstep"><b>02 Products</b><span>Browse investment products &amp; projects</span></div><div class="larrow">→</div>
+      <div class="lstep"><b>03 Cart</b><span>Add products to cart</span></div><div class="larrow">→</div>
+      <div class="lstep"><b>04 Order</b><span>Place order for the chosen product</span></div><div class="larrow">→</div>
+      <div class="lstep money"><b>05 Pay</b><span>Transaction via Aamarpay (+ IPN webhook)</span></div><div class="larrow">→</div>
+      <div class="lstep money"><b>06 Return</b><span>Disbursement of returns to investor</span></div><div class="larrow">→</div>
+      <div class="lstep money"><b>07 Reinvest</b><span>Returns routed into new products</span></div>
+    </div>
+    <div class="grid g2" style="flex:1;margin-top:12px">
+      <div class="card"><div class="cap">Certificates &amp; documents</div>
+        <p>• <b style="color:#fff">Yearly tax certificate</b> per fiscal year, generated in-app<br>
+        • <b style="color:#fff">Order certificate signed by the CEO</b> — downloadable for every order<br>
+        • Both generated from the investor&apos;s real order + return history</p></div>
+      <div class="card orange"><div class="cap">Events &amp; automatic emails</div>
+        <p>• Every step emits a domain event → <b style="color:#fff">Laravel queues (Horizon) + cron jobs</b><br>
+        • Automatic emails: payment receipts, order confirmations, return notices, certificate delivery<br>
+        • <b style="color:#fff">New product published → FCM push</b> to investor apps via <span class="mono">PolygonFcmChannel</span></p></div>
+    </div>
+    <div class="tag">investor · loop</div><div class="pageno">11 / 17</div>
+  </section>
+
 
   <!-- 11 POLYGON PACKAGES -->
   <section class="slide">
@@ -284,7 +311,7 @@
       <div class="card"><div class="num">08</div><h3>Aamarpay</h3><p>Custom payment gateway integration.</p></div>
       <div class="card"><div class="num">09</div><h3>OTP · Faq · CacheControl · Wegro</h3><p>Auth, content, cache config, platform glue.</p></div>
     </div>
-    <div class="tag">investor · packages</div><div class="pageno">11 / 16</div>
+    <div class="tag">investor · packages</div><div class="pageno">12 / 17</div>
   </section>
 
   <!-- 12 INVESTOR API -->
@@ -305,7 +332,7 @@
       <td class="mono">shop/application<br>shop/investmentproduct<br>shop/investmentreturn<br>shop/faq · shop/report</td>
       <td class="mono">105 endpoints: categories, products, cart,<br>checkout, orders, customers, CMS<br>+ Polygon investor additions</td></tr>
     </table>
-    <div class="tag">investor · api</div><div class="pageno">12 / 16</div>
+    <div class="tag">investor · api</div><div class="pageno">13 / 17</div>
   </section>
 
   <!-- 13 RELATIONSHIP -->
@@ -317,7 +344,7 @@
       <div class="card"><h3>Today: independent stacks</h3><p>Separate languages, DBs (PostgreSQL vs MySQL), repos, pipelines. No live system-to-system calls — relationship is at product/brand level.</p></div>
       <div class="card orange"><h3>Recommended integration bus</h3><p>1. Settlement/deposit events → investor payouts (HMAC-signed webhook)<br>2. <span class="mono">GET /impact-stats</span> on OGRO → feeds Wegro\Stats in the APP<br>3. Payout confirmations back to OGRO ledger</p></div>
     </div>
-    <div class="tag">integration</div><div class="pageno">13 / 16</div>
+    <div class="tag">integration</div><div class="pageno">14 / 17</div>
   </section>
 
   <!-- 14 DEPLOYMENT -->
@@ -329,7 +356,7 @@
       <div class="card"><h3>Wegro-Investor</h3><p>• Docker: Dockerfile.production (php-fpm + nginx + supervisor + cron)<br>• MySQL · Redis + Horizon queues<br>• Post-deploy: storage:link, storage perms (www-data)<br>• Aamarpay sandbox for payment testing</p></div>
     </div>
     <div class="card" style="margin-top:12px;border-left:4px solid var(--orange)"><p><b style="color:var(--orange)">Found in repo:</b> secrets committed in <span class="mono">docker-compose-stagging.yml</span> (DB password, JWT secrets, SendGrid key) — rotate &amp; move to secret manager (see architecture doc §11).</p></div>
-    <div class="tag">deployment</div><div class="pageno">14 / 16</div>
+    <div class="tag">deployment</div><div class="pageno">15 / 17</div>
   </section>
 
   <!-- 15 GRAPH -->
@@ -346,7 +373,7 @@
       <div class="card"><h3>Where</h3><p class="mono">graphify-out/<br>├─ graph.json · GRAPH_REPORT.md · graph.html</p><p style="margin-top:6px">Per-repo graphs live in each repo's own graphify-out/.</p></div>
       <div class="card"><h3>Ask it, don't grep it</h3><p class="mono" style="line-height:1.7">graphify query "how is a loan disbursed"<br>graphify explain "ProjectApplication"<br>graphify path "Farmer" "BankSettlement"</p></div>
     </div>
-    <div class="tag">knowledge graph</div><div class="pageno">15 / 16</div>
+    <div class="tag">knowledge graph</div><div class="pageno">16 / 17</div>
   </section>
 
   <!-- 16 NEXT STEPS -->
@@ -363,13 +390,13 @@
       </div>
     </div>
     <div class="card" style="margin-top:16px;text-align:center"><p style="font-size:17px">Deliverables: <span class="mono">TWO_SYSTEM_ARCHITECTURE.md</span> (deep doc) · <span class="mono">API_SURFACE_CATALOG.md</span> (endpoints) · this deck · <span class="mono">graphify-out/</span></p></div>
-    <div class="tag">roadmap</div><div class="pageno">16 / 16</div>
+    <div class="tag">roadmap</div><div class="pageno">17 / 17</div>
   </section>
 
 </div>
 
 <div class="ctrl">
-  <button onclick="go(-1)">◀ Prev</button><span id="pos">1 / 16</span><button onclick="go(1)">Next ▶</button>
+  <button onclick="go(-1)">◀ Prev</button><span id="pos">1 / 17</span><button onclick="go(1)">Next ▶</button>
   <button onclick="document.getElementById('pptx').classList.toggle('open')">PPTX Markdown</button>
   <button onclick="window.print()">Print/PDF</button>
 </div>
@@ -377,7 +404,7 @@
 <aside class="pptx" id="pptx">
   <h4>Per-slide markdown for your PPTX agent</h4>
   <p class="tip">Copy this block into any markdown→PPTX tool. If the tool speaks HTML better than markdown, use <b>Print/PDF</b> on the deck itself (16 pages, brand-styled) and convert the PDF.</p>
-  <pre>WEGRO — Two System Architecture (15-min deck)
+  <pre>WEGRO — Two System Architecture (17-slide deck)
 
 ## Slide 1 — Title
 # WEGRO — Two System Architecture
@@ -400,16 +427,16 @@ Frontend: React 18 + Vite, Redux Toolkit + RTK Query, React Router 6 with guards
 ## Slide 5 — Backend module map
 ~36 modules, 85 entities: people (auth/users/roles/permissions/otp/field-officers/farmers/region/user-locations), loan core (projects/project-applications/loan-agreements/visits/collections/deposits/settlements/banks/call-dispatch), inventory &amp; trade, field content (surveys/questions/sections/answers/notices), platform (websocket/firebase/notifications/email/file-upload/export/activity-log/system-settings), website CMS.
 
-## Slide 6 — Loan lifecycle
-01 Farmer applies → 02 Bank onboarding (account open, CRM approval) → 03 Loan agreement signed → approved → disbursed → 04 Field visits (identity, crop-health ×3, harvest) → 05 Collections approved → deposited → 06 Bank settlement (penalties, late fees).
-KPIs: ~30 application endpoints · 5-stage visits · 17 bank-panel bulk actions · COO→CFO project approval.
+## Slide 6 — Loan lifecycle (deck2 design)
+8-step state machine: 01 Apply (land, survey, credit score) → 02 Approve (officer recommends, supervisor checks; reject/blacklist) → 03 Agreement (drafted, approved, corrections) → 04 Disburse (bank account, CRM approval) → 05 Inputs (bundle selected, acknowledged, distributed) → 06 Visits (identity + crop-health ×3 + harvest) → 07 Collect (collections, deposits, late fees, penalties) → 08 Settle (bank settlement + audit log).
+Bottom cards: dual sign-off COO→CFO · everything logged · /bank-panel runs the pipeline with 11 bulk PATCH actions.
 
 ## Slide 7 — Frontend architecture
-Structure: routing/ (AllRoutes, AppRoutes, guards), store/ (app, auth, filters + features/&lt;domain&gt;/&lt;domain&gt;Api), modules/ (35), components/ (MasterLayout, ProtectedRoute, PDF), configs/permissionsEnum, enums/AppEnums.
+Structure: routing/ (AllRoutes, AppRoutes, guards), store/ (app, auth, filters + features/<domain>/<domain>Api), modules/ (35), components/ (MasterLayout, ProtectedRoute, PDF), configs/permissionsEnum, enums/AppEnums.
 Rules: RTK Query only; screens gated by PermissionsEnum mirroring backend; main/report/AI API URLs. Signature screens: BankTrackingSheet, BankPanel, InputPanel, ProjectGanttChart, DisbursementPendingApprovals, EBLBankPdfGenerator.
 
 ## Slide 8 — API surface
-60 controllers, 347 endpoints: auth (/auth/login, refresh), farmers (+credit-score, phone update approvals), applications (disburse-loan, approve, blacklist, late-fee), bank flow (17 bulk actions), visits (mark-as-completed ×5), collections (onboarding fee, correct, approve), inventory (PO receive, transfers, sales payments), platform (notifications, firebase push, activity logs). Live docs at /docs.
+60 controllers, 347 endpoints: auth (/auth/login, refresh), farmers (+credit-score, phone update approvals), applications (disburse-loan, approve, blacklist, late-fee), bank flow (11 bulk actions), visits (mark-as-completed ×5), collections (onboarding fee, correct, approve), inventory (PO receive, transfers, sales payments), platform (notifications, firebase push, activity logs). Live docs at /docs.
 
 ## Slide 9 — Investor domain
 Investor APP: OTP login → products → invest → track returns → FCM push → Aamarpay pay in/out.
@@ -420,26 +447,31 @@ KPIs: 14 custom packages · 24 Bagisto packages · 170 routes · 3 surfaces.
 Flow: Investor APP → api routes (Polygon + Webkul API) → services (OnboardingService, repositories, listeners) → Eloquent (proxy pattern) → MySQL + Redis/Horizon.
 Key: Polygon\Notification\PolygonFcmChannel (push), Polygon\Aamarpay (payments), Polygon\Wegro (glue + Stats DTO).
 
-## Slide 11 — Custom packages
+## Slide 11 — The investor loop (NEW)
+01 Onboard (application → ops review) → 02 Products (browse investment products &amp; projects) → 03 Cart → 04 Order → 05 Pay (transaction via Aamarpay + IPN webhook) → 06 Return (disbursement to investor) → 07 Reinvest (returns into new products).
+Certificates: yearly tax certificate per fiscal year; order certificate signed by the CEO — both downloadable in-app, generated from real order/return history.
+Automation: every step emits a domain event → Laravel queues (Horizon) + cron jobs send automatic emails (payment receipts, order confirmations, return notices, certificate delivery); new product published → FCM push to investor apps.
+
+## Slide 12 — Custom packages
 Agent (accounts, OTP+JWT) · Application (onboarding) · InvestmentProduct · InvestmentReturn · Report · Zone/Territory · Notification (FCM) · Aamarpay · OTP/Faq/CacheControl/Wegro.
 
-## Slide 12 — Investor API
+## Slide 13 — Investor API
 APP API: POST /api/shoot-otp, /validate-otp, /agent/login, /token/refresh, password/change; GET /agent/me, /agent/manager.
 Payments: /aamarpay/success|cancel|fail|ipn (verify signatures).
 Admin: application (+datatable, approve, resubmit), investmentproduct, sales/returns, report/*, agents, faqs. Shop: application, investmentproduct, investmentreturn, faq, report. Storefront: 105 Bagisto API endpoints.
 
-## Slide 13 — Relationship
+## Slide 14 — Relationship
 Independent stacks today (languages/DBs/pipelines separate). Recommended: settlement/deposit events → payouts (HMAC webhook); GET /impact-stats on OGRO feeds Wegro\Stats; payout confirmations back to OGRO.
 
-## Slide 14 — Deployment
+## Slide 15 — Deployment
 Ogro: wcp-backend Docker, staging api.dev.wegro.global, Postgres, S3, SendGrid, nginx frontend, shared wegro-docker infra.
 Investor: Dockerfile.production (fpm/nginx/supervisor/cron), MySQL, Redis+Horizon, storage:link post-deploy.
 Alert: secrets in staging compose must be rotated.
 
-## Slide 15 — Knowledge graph
+## Slide 16 — Knowledge graph
 20,682 nodes / 51,950 edges merged from 3 repos (repo-tagged); 0-cost AST extraction, no API keys. Outputs at graphify-out/ (graph.json, GRAPH_REPORT.md, graph.html). Query instead of grep: graphify query/explain/path.
 
-## Slide 16 — Next steps
+## Slide 17 — Next steps
 01 Rotate secrets → 02 Harden CORS &amp; ACL → 03 Contract tests (Swagger + route:list CI) → 04 Integration bus (settlement ↔ payouts) → 05 Fix EBL PDF bug, keep API catalog fresh.
 Deliverables: TWO_SYSTEM_ARCHITECTURE.md, API_SURFACE_CATALOG.md, this deck, graphify-out/.</pre>
 </aside>
@@ -453,12 +485,10 @@ Deliverables: TWO_SYSTEM_ARCHITECTURE.md, API_SURFACE_CATALOG.md, this deck, gra
 </script>
 
 <script>
-  // Fit the fixed 1280x720 slide to any viewport (iframe-friendly)
   (function(){
     function fit(){
       var s=Math.min(innerWidth/1300, innerHeight/740);
-      var slides=document.querySelectorAll('.slide');
-      slides.forEach(function(el){el.style.setProperty('--fit', s);});
+      document.querySelectorAll('.slide').forEach(function(el){el.style.setProperty('--fit', s);});
     }
     fit(); addEventListener('resize', fit);
   })();

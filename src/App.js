@@ -8,6 +8,7 @@ import HomePage from './components/pages/HomePage';
 import AboutPage from './components/pages/AboutPage';
 import ProjectsPage from './components/pages/ProjectsPage';
 import SysArchitecturePage from './components/pages/SysArchitecturePage';
+import PitchPage from './components/pages/PitchPage';
 import BlogsPage from './components/pages/BlogsPage';
 import ContactPage from './components/pages/ContactPage';
 
@@ -24,6 +25,7 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/projects" element={<ProjectsPage />} />
               <Route path="/sys-architecture" element={<SysArchitecturePage />} />
+              <Route path="/pitch" element={<PitchPage />} />
               <Route path="/blogs" element={<BlogsPage />} />
               <Route path="/contact" element={<ContactPage />} />
             </Routes>

@@ -25,6 +25,18 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4">
+      {/* 15 Min Pitch — top-right corner button (desktop) */}
+      <Link
+        to="/pitch"
+        className={`hidden md:flex absolute right-5 top-6 z-50 items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+          isDark
+            ? 'bg-portavia-green text-black hover:opacity-90'
+            : 'bg-portavia-green text-black hover:opacity-90 shadow-lg'
+        } ${location.pathname === '/pitch' ? 'ring-2 ring-portavia-green/60' : ''}`}
+      >
+        <span aria-hidden="true">⏱</span> 15 Min Pitch
+      </Link>
+
       {/* Desktop Pill Nav */}
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
@@ -137,6 +149,13 @@ const Header = () => {
                     {link.label}
                   </Link>
                 ))}
+                <Link
+                  to="/pitch"
+                  onClick={() => setIsOpen(false)}
+                  className="block px-4 py-3 rounded-xl text-sm font-semibold bg-portavia-green text-black"
+                >
+                  ⏱ 15 Min Pitch
+                </Link>
                 <Link
                   to="/contact"
                   onClick={() => setIsOpen(false)}
