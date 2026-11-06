@@ -70,7 +70,6 @@ const slideId = (text) => {
 /* ---------- renderer ---------- */
 function RenderBlocks({ blocks, isDark }) {
   const out = [];
-  let inSlide = false;
   let slideKey = 0;
   let group = [];
 
@@ -96,11 +95,9 @@ function RenderBlocks({ blocks, isDark }) {
   blocks.forEach((b, i) => {
     if (b.type === 'h2' && /^Slide\s/i.test(b.text)) {
       flush();
-      inSlide = true;
       slideKey = i;
     } else if (b.type === 'h2') {
       flush();
-      inSlide = false;
     }
     group.push(b);
   });

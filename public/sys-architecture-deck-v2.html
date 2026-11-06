@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEGRO — Two System Architecture (Deck)</title>
+<style>
+  :root{
+    --g900:#0B3B2E; --g850:#0E4433; --g800:#124B38; --g700:#155C42; --g600:#1B6B4A;
+    --g500:#2E8B62; --orange:#F58220; --orange-d:#D96A0F;
+    --white:#FFFFFF; --mint:#D9E8E0; --mint-d:#BFDCCB; --dim:#9FC2B0;
+    --red:#E26A4A;
+    --head:'Arial Black','Arial Bold',Arial,'Helvetica Neue',Helvetica,sans-serif;
+    --body:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif;
+    --mono:'Consolas','SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#071F19; font-family:var(--body); color:var(--mint);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  /* ---------- deck shell ---------- */
+  #stage{position:relative; width:1280px; height:720px; transform-origin:center center;
+         box-shadow:0 30px 80px rgba(0,0,0,.55); background:var(--g900)}
+  .slide{position:absolute; inset:0; padding:34px 46px 40px; display:none; overflow:hidden;
+         background:
+           radial-gradient(1200px 600px at 78% -10%, rgba(46,139,98,.20), transparent 60%),
+           radial-gradient(900px 500px at -8% 110%, rgba(245,130,32,.10), transparent 55%),
+           linear-gradient(160deg,#0C4132 0%, #0B3B2E 45%, #092F25 100%);}
+  .slide.active{display:flex; flex-direction:column; animation:fade .28s ease both}
+  @keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* petals, bottom-left signature accent */
+  .slide::before{content:""; position:absolute; left:-58px; bottom:-26px; width:86px; height:86px;
+     background:var(--orange); border-radius:0 88% 0 88%; transform:rotate(24deg); opacity:.95}
+  .slide::after{content:""; position:absolute; left:-40px; bottom:58px; width:52px; height:52px;
+     background:var(--orange); border-radius:0 88% 0 88%; transform:rotate(-12deg); opacity:.8}
+
+  /* ---------- chrome ---------- */
+  .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px}
+  .logo{font-family:var(--head); font-size:22px; letter-spacing:.02em; color:var(--orange)}
+  .section{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); font-weight:700}
+  .kicker{font-size:11.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--orange); font-weight:700}
+  h1{font-family:var(--head); font-size:38px; line-height:1.02; color:#fff; letter-spacing:-.005em;
+     text-transform:uppercase; margin:6px 0 0}
+  .rule{width:78px; height:4px; background:var(--orange); margin:12px 0 24px; border-radius:2px}
+  .foot{position:absolute; left:46px; right:46px; bottom:16px; display:flex; justify-content:space-between;
+        font-size:10px; color:var(--dim); letter-spacing:.06em}
+  .body{position:relative}
+  .cap{font-size:10.6px; text-transform:uppercase; letter-spacing:.13em; color:var(--orange); font-weight:800; margin-bottom:10px}
+
+  /* ---------- primitives ---------- */
+  .card{background:var(--g700); border-radius:12px; padding:18px 20px; position:relative}
+  .card.deep{background:var(--g850); border:1px solid rgba(46,139,98,.55)}
+  .card .h{font-size:13.4px; font-weight:800; color:#fff; letter-spacing:.01em}
+  .card .cap{font-size:10.6px; text-transform:uppercase; letter-spacing:.13em; color:var(--orange); font-weight:800; margin-bottom:10px}
+  .muted{color:var(--mint-d); font-size:12.4px; line-height:1.55}
+  .small{font-size:11.4px; line-height:1.5; color:var(--dim)}
+  .mono{font-family:var(--mono); font-size:11.6px}
+  ul.b{list-style:none; display:grid; gap:6px}
+  ul.b li{font-size:12px; line-height:1.5; color:var(--mint-d); padding-left:14px; position:relative}
+  ul.b li::before{content:"▸"; position:absolute; left:0; color:var(--orange); font-weight:800}
+  ul.b li b{color:#fff; font-weight:700}
+  .pill{display:inline-flex; align-items:center; justify-content:center; padding:7px 14px; border-radius:99px;
+        background:var(--g500); color:#fff; font-size:11px; font-weight:700; white-space:nowrap}
+  .pill.ghost{background:var(--g700); color:var(--mint-d)}
+  .grid{display:grid; gap:14px}
+
+  /* kpi */
+  .kpis{display:grid; grid-template-columns:repeat(5,1fr); gap:14px}
+  .kpi{background:var(--g700); border-radius:12px; padding:14px 16px 14px 20px; position:relative}
+  .kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:12px 0 0 12px; background:var(--orange)}
+  .kpi.alt::before{background:var(--mint-d)}
+  .kpi .v{font-family:var(--head); font-size:30px; color:#fff; line-height:1}
+  .kpi .l{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--mint-d); font-weight:800; margin-top:6px}
+  .kpi .n{font-size:10.2px; color:var(--dim); margin-top:6px}
+
+  /* timeline */
+  .tl{display:grid; grid-template-columns:repeat(8,1fr); gap:9px; position:relative; margin-top:6px}
+  .tl .line{position:absolute; left:5.2%; right:5.2%; top:27px; height:2px; background:var(--orange); opacity:.85}
+  .tl .step{position:relative; text-align:left}
+  .node{width:46px; height:46px; border-radius:50%; background:var(--g500); border:2px solid var(--orange);
+        display:flex; align-items:center; justify-content:center; font-family:var(--head); font-size:14px; color:#fff;
+        position:relative; z-index:2; margin:2px auto 12px}
+  .tl .step:nth-child(even) .node{border-color:var(--mint-d)}
+  .tl .step .card{padding:14px 12px; min-height:196px}
+  .tl .step .h{font-size:11.2px; text-transform:uppercase; letter-spacing:.03em}
+  .tl .step .d{font-size:10.4px; color:var(--mint-d); line-height:1.42; margin-top:7px}
+
+  /* rows / tables */
+  .row{display:grid; grid-template-columns:190px 1fr; gap:14px; align-items:center;
+       background:var(--g700); border-radius:10px; padding:15px 16px; margin-bottom:9px}
+  .row.alt{background:var(--g600)}
+  .row .k{font-size:11.8px; font-weight:800; color:#fff}
+  .row .v{font-size:11.5px; color:var(--mint-d); line-height:1.45}
+
+  /* notes drawer */
+  #notes{position:absolute; left:0; right:0; bottom:0; max-height:44%; overflow:auto; display:none;
+     background:rgba(4,20,15,.96); border-top:2px solid var(--orange); padding:16px 24px 20px;
+     color:var(--mint); font-size:12px; line-height:1.55; white-space:pre-wrap; z-index:20}
+  #notes.show{display:block}
+  #notes b{color:var(--orange)}
+
+  /* markdown modal */
+  #mdwrap{position:fixed; inset:0; background:rgba(3,14,11,.86); display:none; z-index:60; padding:4vh 6vw}
+  #mdwrap.show{display:flex; flex-direction:column; gap:12px}
+  #mdbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  #mdbar h3{font-size:13px; color:#fff; letter-spacing:.06em; text-transform:uppercase; margin-right:auto}
+  button{font-family:var(--body); font-size:11.5px; font-weight:700; color:#fff; background:var(--g600);
+         border:1px solid rgba(255,255,255,.14); border-radius:8px; padding:8px 13px; cursor:pointer}
+  button:hover{background:var(--g500)}
+  button.pri{background:var(--orange); color:#20130A; border-color:transparent}
+  button.pri:hover{background:var(--orange-d); color:#fff}
+  #mdtext{flex:1; width:100%; background:#06231B; color:#CBE6D8; border:1px solid rgba(46,139,98,.5);
+          border-radius:10px; padding:16px; font-family:var(--mono); font-size:11.5px; line-height:1.5; resize:none}
+
+  /* top progress */
+  #bar{position:fixed; top:0; left:0; height:3px; background:var(--orange); width:0; z-index:70; transition:width .2s}
+
+  /* hud */
+  #hud{position:fixed; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; align-items:center;
+       background:rgba(6,26,21,.9); border:1px solid rgba(46,139,98,.45); border-radius:99px; padding:6px 10px; z-index:50}
+  #hud .dots{display:flex; gap:5px; margin:0 6px}
+  #hud .dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.22); cursor:pointer}
+  #hud .dot.on{background:var(--orange); transform:scale(1.15)}
+  #hud .count{font-size:10.5px; color:var(--dim); font-weight:700; letter-spacing:.1em; min-width:46px; text-align:center}
+  #hud .btn{padding:5px 9px; font-size:10.5px; border-radius:99px}
+  .hint{position:fixed; bottom:16px; right:18px; font-size:10px; color:#5F8574; z-index:50; letter-spacing:.05em}
+
+  /* print → pdf */
+  @media print{
+    @page{size:1280px 720px; margin:0}
+    body{display:block; overflow:visible; background:#fff}
+    #stage{transform:none!important; width:1280px; height:auto; box-shadow:none}
+    .slide{display:block!important; position:relative; width:1280px; height:720px; page-break-after:always}
+    #hud,#bar,.hint,#notes,#mdwrap{display:none!important}
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage">
+
+<!-- ══════════════════════════════ 01 TITLE ══════════════════════════════ -->
+<section class="slide active" data-title="Title">
+  <div style="position:absolute; right:0; top:0; bottom:0; width:34%; background:var(--g850); border-left:3px solid var(--orange)"></div>
+  <div class="top"><div class="logo">WEGRO</div></div>
+  <div class="body" style="max-width:62%">
+    <div class="kicker" style="margin-top:44px">Platform architecture briefing · November 2026</div>
+    <h1 style="font-size:62px; margin-top:14px">Two systems.<br>One platform.</h1>
+    <div class="rule" style="width:112px; margin:22px 0 20px"></div>
+    <p class="muted" style="font-size:14px; max-width:520px">
+      OGRO — the agri-ERP that runs the field &nbsp;·&nbsp; WEGRO-INVESTOR — the platform that funds it
+    </p>
+    <div style="display:flex; gap:10px; margin-top:38px; flex-wrap:wrap">
+      <span class="pill ghost">NestJS · React · PostgreSQL</span>
+      <span class="pill ghost">Laravel 8 · Bagisto · MySQL</span>
+      <span class="pill ghost">517 API endpoints mapped</span>
+    </div>
+    <p class="small" style="margin-top:34px">Built from the live repos + merged code graph — 20,682 nodes / 51,950 edges</p>
+  </div>
+  <div style="position:absolute; right:46px; top:150px; width:340px">
+    <div class="kicker">In 15 minutes</div>
+    <div style="display:grid; gap:20px; margin-top:18px">
+      <div style="display:flex; gap:12px"><span style="font-family:var(--head); color:var(--orange); font-size:15px">01</span><span class="muted">The ecosystem in one picture</span></div>
+      <div style="display:flex; gap:12px"><span style="font-family:var(--head); color:var(--orange); font-size:15px">02</span><span class="muted">OGRO: modules, loan lifecycle, API</span></div>
+      <div style="display:flex; gap:12px"><span style="font-family:var(--head); color:var(--orange); font-size:15px">03</span><span class="muted">WEGRO-INVESTOR: packages, app API</span></div>
+      <div style="display:flex; gap:12px"><span style="font-family:var(--head); color:var(--orange); font-size:15px">04</span><span class="muted">How the two systems connect</span></div>
+      <div style="display:flex; gap:12px"><span style="font-family:var(--head); color:var(--orange); font-size:15px">05</span><span class="muted">Deployment &amp; infrastructure</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>WEGRO · Platform Architecture</span><span>01 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 02 AGENDA ══════════════════════════════ -->
+<section class="slide" data-title="Agenda">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">Agenda</div></div>
+  <div class="kicker">15 minutes · 14 slides</div>
+  <h1>What we'll cover</h1>
+  <div class="rule"></div>
+  <div class="body grid" style="grid-template-columns:1fr 1fr; gap:16px 18px">
+    <div class="card" style="display:flex; gap:16px; align-items:center; padding:18px">
+      <div class="node" style="margin:0; width:52px; height:52px">01</div>
+      <div><div class="h" style="font-size:15px">The ecosystem</div><div class="muted" style="margin-top:4px">Two systems, zero shared infrastructure</div></div>
+      <div style="margin-left:auto" class="kicker">1.5 min</div>
+    </div>
+    <div class="card" style="display:flex; gap:16px; align-items:center; padding:18px">
+      <div class="node" style="margin:0; width:52px; height:52px">02</div>
+      <div><div class="h" style="font-size:15px">OGRO — agri-ERP</div><div class="muted" style="margin-top:4px">Stack, 36 modules, loan lifecycle</div></div>
+      <div style="margin-left:auto" class="kicker">4.5 min</div>
+    </div>
+    <div class="card" style="display:flex; gap:16px; align-items:center; padding:18px">
+      <div class="node" style="margin:0; width:52px; height:52px">03</div>
+      <div><div class="h" style="font-size:15px">OGRO API surface</div><div class="muted" style="margin-top:4px">60 controllers, 347 endpoints</div></div>
+      <div style="margin-left:auto" class="kicker">2 min</div>
+    </div>
+    <div class="card" style="display:flex; gap:16px; align-items:center; padding:18px">
+      <div class="node" style="margin:0; width:52px; height:52px">04</div>
+      <div><div class="h" style="font-size:15px">WEGRO-INVESTOR</div><div class="muted" style="margin-top:4px">14 Polygon packages, Investor APP API</div></div>
+      <div style="margin-left:auto" class="kicker">4 min</div>
+    </div>
+    <div class="card" style="display:flex; gap:16px; align-items:center; padding:18px">
+      <div class="node" style="margin:0; width:52px; height:52px">05</div>
+      <div><div class="h" style="font-size:15px">Where they meet</div><div class="muted" style="margin-top:4px">Today nothing — three clean bridges</div></div>
+      <div style="margin-left:auto" class="kicker">2 min</div>
+    </div>
+    <div class="card" style="display:flex; gap:16px; align-items:center; padding:18px">
+      <div class="node" style="margin:0; width:52px; height:52px">06</div>
+      <div><div class="h" style="font-size:15px">Ops, security, next</div><div class="muted" style="margin-top:4px">Deploy, rotate secrets, roadmap</div></div>
+      <div style="margin-left:auto" class="kicker">1 min</div>
+    </div>
+  </div>
+  <div class="foot"><span>Agenda</span><span>02 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 03 ECOSYSTEM ══════════════════════════════ -->
+<section class="slide" data-title="Ecosystem">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">01 · The ecosystem</div></div>
+  <div class="kicker">Ecosystem overview</div>
+  <h1>Two systems, one brand</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:1fr 190px 1fr; gap:0; align-items:start">
+    <div class="card" style="padding:20px 22px; border-top:4px solid var(--orange)">
+      <div class="cap" style="margin:0">System 1</div>
+      <div style="font-family:var(--head); font-size:24px; color:#fff; margin:6px 0 4px">OGRO — Agri-ERP</div>
+      <div class="small mono" style="margin-bottom:12px">wegro-control-panel-backend + frontend</div>
+      <ul class="b">
+        <li><b>Runs the field:</b> farmers, lands, surveys, field visits</li>
+        <li><b>Runs the money:</b> project applications, loans, inputs, collections, bank settlement</li>
+      </ul>
+      <div class="small" style="margin:12px 0">Users: farmers · field officers · bank partners · HQ</div>
+      <div style="display:flex; gap:8px"><span class="pill">NestJS</span><span class="pill">React 18</span><span class="pill">PostgreSQL</span></div>
+    </div>
+    <div style="text-align:center; padding-top:78px">
+      <div class="kicker" style="line-height:2.1">no shared DB<br>no shared code</div>
+      <div style="height:2px; background:var(--g500); width:70px; margin:10px auto"></div>
+      <div class="small">business level only</div>
+    </div>
+    <div class="card" style="padding:20px 22px; border-top:4px solid var(--mint-d)">
+      <div class="cap" style="margin:0; color:var(--mint-d)">System 2</div>
+      <div style="font-family:var(--head); font-size:24px; color:#fff; margin:6px 0 4px">WEGRO-INVESTOR</div>
+      <div class="small mono" style="margin-bottom:12px">wegro-customer-backend · Laravel 8 + Bagisto</div>
+      <ul class="b">
+        <li><b>Raises capital:</b> investment products, onboarding, returns</li>
+        <li><b>Runs the network:</b> zones, territories, agents, payouts</li>
+      </ul>
+      <div class="small" style="margin:12px 0">Users: investors · agents · zonal managers · admins</div>
+      <div style="display:flex; gap:8px"><span class="pill">Laravel 8</span><span class="pill">Bagisto</span><span class="pill">MySQL</span></div>
+    </div>
+  </div>
+  <div class="card deep" style="position:absolute; left:46px; right:46px; bottom:52px; padding:14px 20px; border-left:4px solid var(--orange)">
+    <span class="muted"><b style="color:#fff">The only glue today:</b> <span class="mono">Polygon\Wegro\Stats</span> — fundDisbursed · productConnected · farmersEngaged · returnReimbursed — aggregate KPIs that mirror OGRO outcomes on the investor home screen.</span>
+  </div>
+  <div class="foot"><span>01 · The ecosystem</span><span>03 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 04 OGRO GLANCE ══════════════════════════════ -->
+<section class="slide" data-title="OGRO at a glance">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">02 · Ogro</div></div>
+  <div class="kicker">System 1 · the operational core</div>
+  <h1>OGRO at a glance</h1>
+  <div class="rule"></div>
+  <div class="kpis body">
+    <div class="kpi"><div class="v">36</div><div class="l">NestJS modules</div><div class="n">src/modules/**</div></div>
+    <div class="kpi alt"><div class="v">60</div><div class="l">Controllers</div><div class="n">REST resources</div></div>
+    <div class="kpi"><div class="v">347</div><div class="l">Endpoints</div><div class="n">Swagger at /docs</div></div>
+    <div class="kpi alt"><div class="v">85</div><div class="l">TypeORM entities</div><div class="n">uuid PK + timestamps</div></div>
+    <div class="kpi"><div class="v">68</div><div class="l">Migrations</div><div class="n">synchronize = false</div></div>
+  </div>
+  <div class="body" style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:24px">
+    <div class="card"><div class="cap">Who uses it</div><ul class="b">
+      <li>Farmers applying to financed crop programs</li><li>Field officers executing visits and collections</li><li>Bank partners and HQ approving disbursement</li></ul></div>
+    <div class="card"><div class="cap">What it owns</div><ul class="b">
+      <li>Farmer → land → survey → project application</li><li>Loan agreement, input bundle, sales, stock</li><li>Collections, deposits, penalties, bank settlement</li></ul></div>
+    <div class="card"><div class="cap">How it ships</div><ul class="b">
+      <li>Single Docker image wcp-backend, restart always</li><li>Vite build behind nginx, installable PWA</li><li>Shared infra compose: nginx/varnish, redis, mysql</li></ul></div>
+  </div>
+  <div style="position:absolute; left:46px; right:46px; bottom:48px"><span class="muted"><b style="color:var(--orange)">Read it as:</b> OGRO is a real ERP — the domain depth lives in one aggregate, <span class="mono">ProjectApplication</span>, and everything else hangs off it.</span></div>
+  <div class="foot"><span>02 · OGRO</span><span>04 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 05 STACK ══════════════════════════════ -->
+<section class="slide" data-title="OGRO stack">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">02 · Ogro</div></div>
+  <div class="kicker">System 1 · technology</div>
+  <h1>Stack &amp; cross-cutting concerns</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:1fr 1fr; gap:18px">
+    <div class="card" style="border-top:4px solid var(--orange); padding:16px 20px 18px">
+      <div class="cap">Backend — NestJS 10</div>
+      <div class="grid" style="gap:26px">
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">API</b><span class="small">Express · global prefix /api · Swagger /docs</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Data</b><span class="small">TypeORM 0.3 → PostgreSQL · 68 migrations</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Auth</b><span class="small">Passport JWT + local · bcrypt · 1d / 7d</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">RBAC</b><span class="small">role · permission · section · RequiredPermissions</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Realtime</b><span class="small">socket.io WebSocket module</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Async</b><span class="small">FCM · SendGrid mailer · @nestjs/schedule cron</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Guards</b><span class="small">throttler 60 req / 6 s · ValidationPipe → 422</span></div>
+      </div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--orange); padding:16px 20px 18px">
+      <div class="cap">Frontend — React 18</div>
+      <div class="grid" style="gap:26px">
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Build</b><span class="small">Vite 4 + TypeScript · vite-plugin-pwa</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">State</b><span class="small">Redux Toolkit 2 + RTK Query · 1 slice / module</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Routing</b><span class="small">React Router 6 · guest / auth guards</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">UI</b><span class="small">TailwindCSS 3 + rsuite · brand tokens</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Charts</b><span class="small">ApexCharts · Google Charts · Google Maps</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Gating</b><span class="small">ProtectedRoute + PermissionsEnum</span></div>
+        <div style="display:grid; grid-template-columns:88px 1fr; gap:10px"><b style="font-size:11px;color:#fff">Extras</b><span class="small">PDF generators · create-api.sh scaffolder</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card deep" style="position:absolute; left:46px; right:46px; bottom:48px; padding:14px 20px">
+    <div class="cap">Conventions worth preserving</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 24px">
+      <ul class="b"><li>Every screen gated by ProtectedRoute + PermissionsEnum</li><li>Data access is RTK Query only — no ad-hoc fetch</li></ul>
+      <ul class="b"><li>DTO + class-validator on every write (422)</li><li>UUID path params · nestjs-typeorm-paginate pages</li></ul>
+    </div>
+  </div>
+  <div class="foot"><span>02 · OGRO</span><span>05 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 06 MODULE MAP ══════════════════════════════ -->
+<section class="slide" data-title="Module map">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">02 · Ogro</div></div>
+  <div class="kicker">~36 feature modules, four domains</div>
+  <h1>Backend module map</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="h" style="font-size:14px; margin-bottom:10px">Money &amp; risk</div>
+      <div class="grid" style="gap:5px"><span class="small mono">project-applications ★</span><span class="small mono">projects · project-banks</span><span class="small mono">loan-agreements (+corrections)</span><span class="small mono">…bank-settlements</span><span class="small mono">…collections · …deposits</span><span class="small mono">banks · branches · modalities</span></div></div>
+    <div class="card" style="border-left:4px solid var(--g500)"><div class="h" style="font-size:14px; margin-bottom:10px">Field operations</div>
+      <div class="grid" style="gap:5px"><span class="small mono">farmers · farmer-phone-updates</span><span class="small mono">field-officers · lands</span><span class="small mono">project-application-visits</span><span class="small mono">field-surveys (+questions, submissions)</span><span class="small mono">answers · sections · questions</span><span class="small mono">field-notices · otp · call-dispatch</span></div></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="h" style="font-size:14px; margin-bottom:10px">Supply chain</div>
+      <div class="grid" style="gap:5px"><span class="small mono">inventory products (+bundles)</span><span class="small mono">purchase-orders (+receive)</span><span class="small mono">stock-adjustments / transfers</span><span class="small mono">inventory-sales (+payments)</span><span class="small mono">dealers · vendors · warehouses · units</span><span class="small mono">commodity-trade</span></div></div>
+    <div class="card" style="border-left:4px solid var(--dim)"><div class="h" style="font-size:14px; margin-bottom:10px">Platform &amp; CMS</div>
+      <div class="grid" style="gap:5px"><span class="small mono">auth · users · role · permission</span><span class="small mono">notifications · firebase (FCM)</span><span class="small mono">activity-log · system-settings</span><span class="small mono">region · user-locations · export</span><span class="small mono">file-upload (S3) · websocket · email</span><span class="small mono">website CMS: awards, banners, faqs…</span></div></div>
+  </div>
+  <div style="position:absolute; left:46px; right:46px; bottom:46px"><span class="muted"><b style="color:var(--orange)">★ ProjectApplication</b> is the aggregate root: visits, collections, deposits, settlements, corrections and logs all key off it.</span></div>
+  <div class="foot"><span>02 · OGRO</span><span>06 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 07 LIFECYCLE ══════════════════════════════ -->
+<section class="slide" data-title="Loan lifecycle">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">02 · Ogro</div></div>
+  <div class="kicker">ProjectApplication — the core state machine</div>
+  <h1>The loan lifecycle</h1>
+  <div class="rule"></div>
+  <div class="body tl">
+    <div class="line"></div>
+    <div class="step"><div class="node">01</div><div class="card"><div class="h">Apply</div><div class="d">Farmer submits to a project: land, survey, credit score</div></div></div>
+    <div class="step"><div class="node">02</div><div class="card"><div class="h">Approve</div><div class="d">Field officer → supervisor review; reject / blacklist paths</div></div></div>
+    <div class="step"><div class="node">03</div><div class="card"><div class="h">Agreement</div><div class="d">Loan agreement drafted, approved, corrections tracked</div></div></div>
+    <div class="step"><div class="node">04</div><div class="card"><div class="h">Disburse</div><div class="d">Bank account, CRM approval, disbursement sign-off</div></div></div>
+    <div class="step"><div class="node">05</div><div class="card"><div class="h">Inputs</div><div class="d">Input bundle selected, acknowledged, distributed</div></div></div>
+    <div class="step"><div class="node">06</div><div class="card"><div class="h">Visits</div><div class="d">Identity + crop-health ×3 + harvest completed in field</div></div></div>
+    <div class="step"><div class="node">07</div><div class="card"><div class="h">Collect</div><div class="d">Collections, deposits, late fees, penalties</div></div></div>
+    <div class="step"><div class="node">08</div><div class="card"><div class="h">Settle</div><div class="d">Settlement run to the partner bank + audit log</div></div></div>
+  </div>
+  <div class="body" style="margin-top:auto; margin-bottom:34px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px">
+    <div class="card deep"><div class="cap">Dual sign-off</div><div class="muted">Projects need COO approval then CFO approval before money moves.</div></div>
+    <div class="card deep"><div class="cap">Everything is logged</div><div class="muted">ProjectApplicationLog + corrections on agreements, collections, deposits.</div></div>
+    <div class="card deep"><div class="cap">Bank-side board</div><div class="muted">/bank-panel runs the whole borrower pipeline in bulk — 12 bulk PATCH actions.</div></div>
+  </div>
+  <div class="foot"><span>02 · OGRO</span><span>07 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 08 FRONTEND + API ══════════════════════════════ -->
+<section class="slide" data-title="OGRO API surface">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">03 · Ogro api</div></div>
+  <div class="kicker">System 1 · the surface</div>
+  <h1>Frontend ↔ 347 endpoints</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:470px 1fr; gap:26px">
+    <div class="card" style="padding:16px 20px">
+      <div class="cap">Every request takes this path</div>
+      <div class="grid" style="gap:14px">
+        <div style="display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center"><span class="pill" style="font-size:10px; padding:6px 8px">BrowserRouter</span><span class="small">isGuest / isAuthenticated guards</span></div>
+        <div style="display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center"><span class="pill" style="font-size:10px; padding:6px 8px">ProtectedRoute</span><span class="small">PermissionsEnum check per screen</span></div>
+        <div style="display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center"><span class="pill" style="font-size:10px; padding:6px 8px">RTK Query slice</span><span class="small">&lt;domain&gt;Api.ts · baseUrl /api</span></div>
+        <div style="display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center"><span class="pill" style="font-size:10px; padding:6px 8px">JwtAuthGuard</span><span class="small">bearer access token (1 day)</span></div>
+        <div style="display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center"><span class="pill" style="font-size:10px; padding:6px 8px">RequiredPermissions</span><span class="small">role → permission set, section-scoped</span></div>
+        <div style="display:grid; grid-template-columns:150px 1fr; gap:12px; align-items:center"><span class="pill" style="font-size:10px; padding:6px 8px">Controller + DTO</span><span class="small">ValidationPipe → service → TypeORM</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">Where the 347 endpoints live</div>
+      <div class="row"><div class="k">Auth &amp; users</div><div class="v">login (email / phone+OTP), refresh, users, roles, permissions</div></div>
+      <div class="row alt"><div class="k">Farmers &amp; field ops</div><div class="v">farmers, phone-update approvals, field officers, lands, surveys, notices</div></div>
+      <div class="row"><div class="k">Projects &amp; loans</div><div class="v">projects (COO→CFO), 30× project-applications, bank/input panels, visits</div></div>
+      <div class="row alt"><div class="k">Inventory &amp; trade</div><div class="v">products, purchase orders, stock, sales, dealers, vendors, commodity</div></div>
+      <div class="row"><div class="k">Platform &amp; CMS</div><div class="v">notifications, settings, regions, banks, firebase push, website content</div></div>
+      <div class="card deep" style="margin-top:6px; padding:12px 16px">
+        <div class="cap" style="font-size:9px">Sample</div>
+        <div class="mono" style="color:var(--mint-d); line-height:1.6">
+          PATCH /project-applications/:uuid/disburse-loan<br>
+          GET /field-officers/dashboard · POST /otp/send<br>
+          POST /bank-panel/crm-approval-bulk
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>03 · OGRO API — full inventory in API_SURFACE_CATALOG.md §A</span><span>08 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 09 INVESTOR GLANCE ══════════════════════════════ -->
+<section class="slide" data-title="Investor platform">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">04 · Wegro-investor</div></div>
+  <div class="kicker">System 2 · Laravel 8 + Bagisto</div>
+  <h1>The investor platform</h1>
+  <div class="rule"></div>
+  <div class="kpis body">
+    <div class="kpi"><div class="v">14</div><div class="l">Polygon packages</div><div class="n">13 business + glue</div></div>
+    <div class="kpi alt"><div class="v">24</div><div class="l">Webkul packages</div><div class="n">read-only · extend only</div></div>
+    <div class="kpi"><div class="v">170</div><div class="l">Route entries</div><div class="n">admin · shop · api</div></div>
+    <div class="kpi alt"><div class="v">3</div><div class="l">Surfaces</div><div class="n">shop · admin · mobile API</div></div>
+    <div class="kpi"><div class="v">105</div><div class="l">Bagisto API routes</div><div class="n">70 GET · 23 POST · 5 DEL · 2 PUT</div></div>
+  </div>
+  <div class="body" style="margin-top:26px">
+    <div class="cap">What the platform does</div>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr); margin-top:4px; height:196px">
+      <div class="card"><div class="h">Capital in</div><div class="muted" style="margin-top:6px">Investment products catalogue, investor onboarding + application review, Aamarpay payments.</div></div>
+      <div class="card"><div class="h">Capital out</div><div class="muted" style="margin-top:6px">InvestmentReturn: reimbursement runs, return methods, refund reports, per-investor history.</div></div>
+      <div class="card"><div class="h">Network</div><div class="muted" style="margin-top:6px">Zone → Territory → Agent hierarchy; agents log in by OTP, see their manager, onboard investors.</div></div>
+      <div class="card"><div class="h">Reach</div><div class="muted" style="margin-top:6px">Investor APP push via a custom FCM channel; admin dashboard for ops and zonal managers.</div></div>
+    </div>
+  </div>
+  <div style="position:absolute; left:46px; right:46px; bottom:48px"><span class="muted"><b style="color:var(--orange)">Note the asymmetry:</b> a whole e-commerce platform was the fastest base — but everything that makes it Wegro is 14 packages of custom code.</span></div>
+  <div class="foot"><span>04 · WEGRO-INVESTOR</span><span>09 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 10 THREE SURFACES ══════════════════════════════ -->
+<section class="slide" data-title="Three surfaces">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">04 · Wegro-investor</div></div>
+  <div class="kicker">System 2 · architecture</div>
+  <h1>One codebase, three surfaces</h1>
+  <div class="rule"></div>
+  <div class="body grid" style="grid-template-columns:repeat(3,1fr); height:252px">
+    <div class="card" style="border-top:4px solid var(--orange); padding:16px 20px">
+      <span class="pill">SHOP</span>
+      <div class="h" style="font-size:15px; margin:12px 0 10px">Storefront</div>
+      <ul class="b"><li>Bagisto shop routes + shop-routes.php</li><li>Investment product pages, returns, FAQ, reports</li><li>Velocity theme</li></ul>
+    </div>
+    <div class="card" style="border-top:4px solid var(--mint-d); padding:16px 20px">
+      <span class="pill">ADMIN</span>
+      <div class="h" style="font-size:15px; margin:12px 0 10px">Vue dashboard</div>
+      <ul class="b"><li>prefix admin/&lt;pkg&gt;, middleware web + admin</li><li>Bouncer ACL, Zonal Manager role</li><li>Onboarding review, agents, products, returns</li></ul>
+    </div>
+    <div class="card" style="border-top:4px solid var(--g500); padding:16px 20px">
+      <span class="pill">API</span>
+      <div class="h" style="font-size:15px; margin:12px 0 10px">Investor APP</div>
+      <ul class="b"><li>prefix /api, bearer JWT via OTP</li><li>Agent login, me, manager, password reset</li><li>Products, returns, reports, payments</li></ul>
+    </div>
+  </div>
+  <div class="card deep" style="position:absolute; left:46px; right:46px; bottom:118px; padding:12px 20px">
+    <div class="cap" style="margin-bottom:4px">Shared core</div>
+    <span class="small">Laravel 8 + Bagisto Core · Eloquent models with Proxy classes · Events/Listeners · Horizon queues on Redis · MySQL</span>
+  </div>
+  <div style="position:absolute; left:46px; right:46px; bottom:52px">
+    <span class="muted"><b style="color:#fff">Package layout is the contract:</b> Providers · Http/Controllers + admin-routes.php / shop-routes.php / api-routes.php · Models (+Proxy) · Config (acl.php, admin-menu.php) · Database/Migrations.</span>
+  </div>
+  <div class="foot"><span>04 · WEGRO-INVESTOR</span><span>10 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 11 PACKAGES ══════════════════════════════ -->
+<section class="slide" data-title="Polygon packages">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">04 · Wegro-investor</div></div>
+  <div class="kicker">System 2 · 13 business packages + platform glue</div>
+  <h1>Custom Polygon packages</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(4,1fr); gap:12px; height:436px">
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="mono" style="color:#fff; font-weight:700">Application</div><div class="small" style="margin-top:6px">Investor onboarding: review, status, resubmit</div></div>
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="mono" style="color:#fff; font-weight:700">InvestmentProduct</div><div class="small" style="margin-top:6px">Product catalogue + admin/shop/API</div></div>
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="mono" style="color:#fff; font-weight:700">InvestmentReturn</div><div class="small" style="margin-top:6px">Returns, reimbursements, return methods</div></div>
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="mono" style="color:#fff; font-weight:700">Aamarpay</div><div class="small" style="margin-top:6px">BD payment gateway: success/cancel/fail/IPN</div></div>
+    <div class="card" style="border-left:4px solid var(--g500)"><div class="mono" style="color:#fff; font-weight:700">Agent</div><div class="small" style="margin-top:6px">Agents, proxies, OTP login, JWT refresh</div></div>
+    <div class="card" style="border-left:4px solid var(--g500)"><div class="mono" style="color:#fff; font-weight:700">Zone</div><div class="small" style="margin-top:6px">Geographic zones of the agent network</div></div>
+    <div class="card" style="border-left:4px solid var(--g500)"><div class="mono" style="color:#fff; font-weight:700">Territory</div><div class="small" style="margin-top:6px">Territories inside a zone</div></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="mono" style="color:#fff; font-weight:700">Notification</div><div class="small" style="margin-top:6px">FCM channel + push subscriptions</div></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="mono" style="color:#fff; font-weight:700">Report</div><div class="small" style="margin-top:6px">Sales / customers / projects / refunds / tax</div></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="mono" style="color:#fff; font-weight:700">OTP</div><div class="small" style="margin-top:6px">shoot + checkValidity for the APP</div></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="mono" style="color:#fff; font-weight:700">Faq</div><div class="small" style="margin-top:6px">Support content, admin + shop</div></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="mono" style="color:#fff; font-weight:700">CacheControl</div><div class="small" style="margin-top:6px">Cache TTL policy</div></div>
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="mono" style="color:#fff; font-weight:700">Wegro</div><div class="small" style="margin-top:6px">Platform glue + Stats DTO</div></div>
+    <div class="card" style="border-left:4px solid var(--dim)"><div class="mono" style="color:#fff; font-weight:700">Webkul (24)</div><div class="small" style="margin-top:6px">Upstream — read-only, extend only</div></div>
+  </div>
+  <div style="position:absolute; left:46px; right:46px; bottom:46px"><span class="muted"><b class="mono" style="color:var(--orange)">Wegro\Stats</b> is the one thread that touches the other system: fundDisbursed · productConnected · farmersEngaged · returnReimbursed.</span></div>
+  <div class="foot"><span>04 · WEGRO-INVESTOR</span><span>11 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 12 INVESTOR API ══════════════════════════════ -->
+<section class="slide" data-title="Investor API">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">04 · Wegro-investor</div></div>
+  <div class="kicker">System 2 · route files</div>
+  <h1>Investor APP API surface</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:440px 1fr; gap:26px">
+    <div class="card" style="padding:16px 20px">
+      <div class="cap">Auth ladder (OTP → JWT)</div>
+      <div class="grid" style="gap:15px">
+        <div style="display:grid; grid-template-columns:26px 1fr; gap:10px"><div class="node" style="width:24px;height:24px;font-size:9.5px;margin:0;border-width:1.5px">1</div><div><div class="mono" style="color:#fff; font-size:10.5px">POST /api/shoot-otp</div><div class="small" style="font-size:9.5px">send OTP to phone</div></div></div>
+        <div style="display:grid; grid-template-columns:26px 1fr; gap:10px"><div class="node" style="width:24px;height:24px;font-size:9.5px;margin:0;border-width:1.5px">2</div><div><div class="mono" style="color:#fff; font-size:10.5px">POST /api/validate-otp</div><div class="small" style="font-size:9.5px">verify, return bearer token</div></div></div>
+        <div style="display:grid; grid-template-columns:26px 1fr; gap:10px"><div class="node" style="width:24px;height:24px;font-size:9.5px;margin:0;border-width:1.5px">3</div><div><div class="mono" style="color:#fff; font-size:10.5px">POST /api/agent/login</div><div class="small" style="font-size:9.5px">agent / investor session</div></div></div>
+        <div style="display:grid; grid-template-columns:26px 1fr; gap:10px"><div class="node" style="width:24px;height:24px;font-size:9.5px;margin:0;border-width:1.5px">4</div><div><div class="mono" style="color:#fff; font-size:10.5px">POST /api/token/refresh</div><div class="small" style="font-size:9.5px">rotate JWT</div></div></div>
+        <div style="display:grid; grid-template-columns:26px 1fr; gap:10px"><div class="node" style="width:24px;height:24px;font-size:9.5px;margin:0;border-width:1.5px">5</div><div><div class="mono" style="color:#fff; font-size:10.5px">GET /api/agent/me</div><div class="small" style="font-size:9.5px">profile [authorization_required]</div></div></div>
+        <div style="display:grid; grid-template-columns:26px 1fr; gap:10px"><div class="node" style="width:24px;height:24px;font-size:9.5px;margin:0;border-width:1.5px">6</div><div><div class="mono" style="color:#fff; font-size:10.5px">GET /api/agent/manager</div><div class="small" style="font-size:9.5px">hierarchy [auth]</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">Payments — Polygon/Aamarpay</div>
+      <div class="grid" style="gap:6px">
+        <div class="row" style="grid-template-columns:1fr; margin:0; padding:9px 14px"><span class="mono">POST /aamarpay/success</span></div>
+        <div class="row" style="grid-template-columns:1fr; margin:0; padding:9px 14px"><span class="mono">POST /aamarpay/cancel</span></div>
+        <div class="row" style="grid-template-columns:1fr; margin:0; padding:9px 14px"><span class="mono">POST /aamarpay/fail</span></div>
+        <div class="row" style="grid-template-columns:1fr; margin:0; padding:9px 14px; background:var(--g600)"><span class="mono" style="color:var(--orange); font-weight:700">POST /aamarpay/ipn ← verify signature</span></div>
+      </div>
+      <div class="cap" style="margin-top:16px">Admin dashboard routes</div>
+      <div class="grid" style="gap:6px">
+        <div style="display:grid; grid-template-columns:190px 1fr; gap:10px"><span class="mono" style="font-size:10px; color:#fff; font-weight:700">admin/application…</span><span class="small">index · datatable · show · resubmit · update-status</span></div>
+        <div style="display:grid; grid-template-columns:190px 1fr; gap:10px"><span class="mono" style="font-size:10px; color:#fff; font-weight:700">admin/agents…</span><span class="small">index · create · edit · update</span></div>
+        <div style="display:grid; grid-template-columns:190px 1fr; gap:10px"><span class="mono" style="font-size:10px; color:#fff; font-weight:700">admin/investmentproduct</span><span class="small">index</span></div>
+        <div style="display:grid; grid-template-columns:190px 1fr; gap:10px"><span class="mono" style="font-size:10px; color:#fff; font-weight:700">admin/sales/returns…</span><span class="small">index · view · create</span></div>
+        <div style="display:grid; grid-template-columns:190px 1fr; gap:10px"><span class="mono" style="font-size:10px; color:#fff; font-weight:700">admin/report/*</span><span class="small">sales · customers · projects · refunds · taxes (+XLS)</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card deep" style="position:absolute; left:46px; right:46px; bottom:48px; padding:11px 20px; border-left:4px solid var(--orange)">
+    <span class="muted">Verification ritual: <span class="mono">php artisan route:list</span> on every release — it is the only reliable picture of ACL exposure.</span>
+  </div>
+  <div class="foot"><span>04 · WEGRO-INVESTOR — full inventory in API_SURFACE_CATALOG.md §B</span><span>12 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 13 INTEGRATION ══════════════════════════════ -->
+<section class="slide" data-title="Integration">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">05 · Integration</div></div>
+  <div class="kicker">Today: nowhere · Tomorrow: three bridges</div>
+  <h1>Where the two systems meet</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:1fr 150px 1fr; gap:16px; align-items:center">
+    <div class="card"><div class="cap" style="margin-bottom:6px">OGRO · PostgreSQL</div><div class="muted">NestJS API + React panel. Owns field truth: applications, inputs, visits, collections, settlements.</div></div>
+    <div style="border:1.5px solid var(--red); border-radius:8px; padding:12px 8px; text-align:center">
+      <div style="color:var(--red); font-weight:800; font-size:10.5px; line-height:1.6; letter-spacing:.06em">NO API<br>NO WEBHOOK</div>
+    </div>
+    <div class="card"><div class="cap" style="margin-bottom:6px; color:var(--mint-d)">WEGRO-INVESTOR · MySQL</div><div class="muted">Laravel + Bagisto. Owns capital truth: investors, products, returns, agents, payouts.</div></div>
+  </div>
+  <div class="cap" style="margin-top:26px">Three bridges if the roadmap needs them</div>
+  <div class="body" style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:8px; height:212px">
+    <div class="card" style="display:grid; grid-template-columns:52px 1fr; gap:12px; align-items:start">
+      <div class="node" style="width:44px;height:44px;margin:0">01</div>
+      <div><div class="h" style="font-size:12.5px">Settlement → payout</div><div class="small" style="margin-top:6px">OGRO settlement/deposit events push to Investor as signed events, so investor payouts reflect what actually settled in the field.</div></div>
+    </div>
+    <div class="card" style="display:grid; grid-template-columns:52px 1fr; gap:12px; align-items:start">
+      <div class="node" style="width:44px;height:44px;margin:0">02</div>
+      <div><div class="h" style="font-size:12.5px">Impact stats</div><div class="small" style="margin-top:6px">One read-only internal endpoint on OGRO feeds <span class="mono">Polygon\Wegro\Stats</span> — real numbers instead of seeded aggregates.</div></div>
+    </div>
+    <div class="card" style="display:grid; grid-template-columns:52px 1fr; gap:12px; align-items:start">
+      <div class="node" style="width:44px;height:44px;margin:0">03</div>
+      <div><div class="h" style="font-size:12.5px">Keep identity apart</div><div class="small" style="margin-top:6px">Farmers/field officers and investors/agents are different populations; SSO is not warranted by the role models.</div></div>
+    </div>
+  </div>
+  <div style="position:absolute; left:46px; right:46px; bottom:46px"><span class="muted"><b style="color:var(--orange)">Contract rules:</b> HMAC-signed payloads · idempotency keys · retry with backoff · source-system event IDs · never a shared database.</span></div>
+  <div class="foot"><span>05 · Integration</span><span>13 / 14</span></div>
+</section>
+
+<!-- ══════════════════════════════ 14 DEPLOYMENT ══════════════════════════════ -->
+<section class="slide" data-title="Deployment">
+  <div class="top"><div class="logo">WEGRO</div><div class="section">06 · Operations</div></div>
+  <div class="kicker">Two pipelines, one shared compose</div>
+  <h1>Deployment &amp; infrastructure</h1>
+  <div class="rule"></div>
+  <div class="body" style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="h" style="font-size:13px; margin-bottom:8px">OGRO backend</div><ul class="b">
+      <li>Dockerfile → image wcp-backend</li><li>compose service wcp-backend, restart always</li><li>APP_URL https://api.dev.wegro.global/api</li><li>Postgres 18.142.55.212:5432 · db wcp-backend</li><li>SendGrid SMTP for mail</li></ul></div>
+    <div class="card" style="border-left:4px solid var(--orange)"><div class="h" style="font-size:13px; margin-bottom:8px">OGRO frontend</div><ul class="b">
+      <li>Vite build → nginx container</li><li>client https://dev.wegro.global</li><li>PWA enabled, installable</li><li>Local DB via postgres-docker compose</li></ul></div>
+    <div class="card" style="border-left:4px solid var(--mint-d)"><div class="h" style="font-size:13px; margin-bottom:8px">WEGRO-INVESTOR</div><ul class="b">
+      <li>docker/Dockerfile.production</li><li>fpm + nginx + supervisor + laravel-cron</li><li>entrypoint.sh boot sequence</li><li>php artisan storage:link + perms on deploy</li><li>Horizon worker on Redis</li></ul></div>
+    <div class="card" style="border-left:4px solid var(--g500)"><div class="h" style="font-size:13px; margin-bottom:8px">Shared infra</div><ul class="b">
+      <li>wegro-docker compose: proxy-server + varnish</li><li>redis + sentinel (queues, cache)</li><li>mysql for Bagisto</li><li>Never deploy the two systems from one pipeline</li><li>Known gap: no CI/CD yet · migrations by hand</li></ul></div>
+  </div>
+  <div class="card" style="position:absolute; left:46px; right:46px; bottom:44px; padding:16px 22px; border-left:5px solid var(--orange); display:flex; align-items:center; justify-content:space-between">
+    <div style="font-family:var(--head); font-size:22px; color:#fff">Two systems. One platform.</div>
+    <div class="muted">Thank you — happy to go deeper on any slide.</div>
+  </div>
+  <div class="foot"><span>06 · Operations</span><span>14 / 14</span></div>
+</section>
+
+<!-- ══════════════════════ speaker notes ══════════════════════ -->
+</div><!-- /stage -->
+
+<div id="notes"></div>
+
+<div id="hud">
+  <button class="btn" id="prev" title="Previous (←)">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="count" id="count">01 / 14</span>
+  <button class="btn" id="next" title="Next (→)">›</button>
+  <button class="btn" id="btnnotes" title="Speaker notes (N)">Notes</button>
+  <button class="btn pri" id="btnmd" title="Markdown export (M)">Markdown →</button>
+</div>
+<div class="hint">← → navigate · N notes · M markdown · P print</div>
+
+<div id="mdwrap">
+  <div id="mdbar">
+    <h3>Slide markdown — paste into any PPTX agent</h3>
+    <button id="mdcopy">Copy all</button>
+    <button id="mdcopyone">Copy current slide</button>
+    <button id="mdsave" class="pri">Download .md</button>
+    <button id="mdclose">Close ✕</button>
+  </div>
+  <textarea id="mdtext" spellcheck="false"></textarea>
+</div>
+
+<script>
+const NOTES = ["SLIDE 01 of 14   ·   83 words   ·   0:43 at a slow pace, 0:40 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 0:43\n------------------------------------------------------------------------------\n\nGood morning, and thank you for your time. My name is [your name]. I am a senior full stack developer.\n\nToday I will show you one platform. We call it WEGRO. It is not one system. It is two systems for one business.\n\nOGRO runs the farm side: farmers, field work, and the money for one season. WEGRO-INVESTOR runs the money side: it brings investors in, and pays them back.\n\nTogether they close the circle. Let me show you how they are built.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 02 of 14   ·   55 words   ·   0:29 at a slow pace, 0:26 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 1:12\n------------------------------------------------------------------------------\n\nThe plan has six short steps.\n\nThe big picture. Then OGRO: what it does and the main business flow. Then its API, kept short. Then the investor platform. Then how the two connect. And last, how we deliver.\n\nAll the numbers today come from the real code, not from a slide.\n\nNext: the big picture.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 03 of 14   ·   148 words   ·   1:17 at a slow pace, 1:11 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 2:29\n------------------------------------------------------------------------------\n\nLet me start with the business problem.\n\nA small farmer needs money before the season. Seeds, fertiliser, and a drone team. It is a loan, and he pays it back after the harvest.\n\nThree groups: the farmer, who needs the loan. The field officer, who visits the farm. And the bank, which puts the money in.\n\nOGRO is the system for these three. One record per farmer. The loan, the inputs, the visits, and every payment.\n\nWhere does the money come from? From investors. WEGRO-INVESTOR is their system. An investor buys a product, and later he gets his return. Agents help people join, area by area.\n\nOne design choice: the two systems do not share a database or code. So if the investor app has a bad day, the farm work continues.\n\nThe only link today is four numbers on the investor home screen.\n\nNext: OGRO in numbers.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 04 of 14   ·   110 words   ·   0:57 at a slow pace, 0:53 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 3:27\n------------------------------------------------------------------------------\n\nNow OGRO in numbers. Numbers help you judge size and risk.\n\nThirty-six modules. One module is one business area: farmers, banks, stock. Thirty-six areas means real work, not a demo.\n\nThree hundred and forty-seven endpoints. An endpoint is one action the software can do. That many actions means a user can work all day inside the system.\n\nEighty-five tables, and sixty-eight database changes. Each change is a small, tested file. We never edit the database by hand, so the data stays safe when the product grows.\n\nWho uses it: the farmer, the field officer, the bank. What it owns: the full chain, from land to last payment.\n\nNext: the technology.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 05 of 14   ·   118 words   ·   1:02 at a slow pace, 0:57 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 4:28\n------------------------------------------------------------------------------\n\nThis slide is about tools. I will only explain why they are good for a business.\n\nThe server uses NestJS with TypeScript. TypeScript is JavaScript with a safety net: many mistakes are caught before release.\n\nFor data we use PostgreSQL. It is well known, and strong with money records.\n\nFor login we use tokens. A token is a visitor pass. It expires after one day, so a lost phone is a short risk.\n\nThe screens are React. One web app that also installs on a phone, so we do not build two apps.\n\nWhy it matters: these are standard tools. Many developers know them, so you are not locked to one person.\n\nNext: how the system is organised.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 06 of 14   ·   94 words   ·   0:49 at a slow pace, 0:45 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 5:17\n------------------------------------------------------------------------------\n\nThe system is organised in four groups.\n\nMoney and risk. This is the centre: projects, loan agreements, collections, deposits, and partner banks.\n\nField operations: farmers, land, surveys, visits, and notices.\n\nSupply chain: products, warehouses, stock, purchase orders, and sales.\n\nAnd the platform: users, roles, permissions, notifications.\n\nWhy it matters: each group is separate. A new feature changes one module, not everything. Smaller change, faster test, less risk.\n\nThe star is one module: the project application. Almost every action connects to it, so new developers start there.\n\nNext: the most important flow in the system.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 07 of 14   ·   181 words   ·   1:34 at a slow pace, 1:27 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 6:52\n------------------------------------------------------------------------------\n\nThis is the heart of the system. If you remember one slide, remember this one.\n\nOne farmer, from application to repayment. Eight steps.\n\nOne. He applies. A field officer records his land, his answers, and a credit score.\n\nTwo. We approve. The officer recommends, and a supervisor checks. We can reject, or blacklist.\n\nThree. The loan agreement: drafted, approved, stored. Corrections are recorded.\n\nFour. We pay out. First the bank account, then CRM approval. Then the money moves.\n\nFive. He gets his inputs: seeds, fertiliser, drone service. He confirms receipt.\n\nSix. Five field visits. One for identity, three to check crop health, one for the harvest. Each visit is a checkpoint.\n\nSeven. He pays back. We record every payment. If he is late, we add a late fee.\n\nEight. We settle with the bank, and we keep a full audit log.\n\nTwo things to notice. Big projects need two approvals: the COO, then the CFO. Nobody moves large money alone. And everything is logged, so the system is ready for a bank audit.\n\nNext: how the screens talk to this system.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 08 of 14   ·   120 words   ·   1:03 at a slow pace, 0:58 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 7:54\n------------------------------------------------------------------------------\n\nA short technical part. How does a screen talk to the server?\n\nEvery request passes the same doors.\n\nFirst: is the user logged in? Second: does he have permission for this screen? Third: is the pass still valid? Fourth: what is his role? A field officer sees only his own farmers. An admin sees everything.\n\nLast: is the data real? If not, the server refuses with a clear error.\n\nOnly then is the database touched.\n\nOn the right you can see where the actions live: login, farmers, projects and loans, inventory, and the platform.\n\nThere is also a documentation page that lists every endpoint, so a new team can start on day one.\n\nNext: the investor side of the platform.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 09 of 14   ·   138 words   ·   1:12 at a slow pace, 1:06 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 9:06\n------------------------------------------------------------------------------\n\nNow the second system. Different product, different user, different technology.\n\nThe users are investors, agents, and a small operations team. So the questions change. Not \"where is the farmer's loan?\", but \"where is my money, and when do I get my return?\"\n\nFour jobs. Money in: the investor sees products and applies. Money out: we run the return payments and keep a history. Network: agents work in zones and territories, under a manager. Reach: push messages to the app.\n\nFourteen packages are our own code. Twenty-four come from the open-source base, and those are read-only.\n\nWe did not start from zero. The base already had login, admin screens, and reports, and that saved us months.\n\nBut the base gives you a shop. It does not give you investments or returns. That is our fourteen packages.\n\nNext: three doors.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 10 of 14   ·   99 words   ·   0:52 at a slow pace, 0:48 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 9:58\n------------------------------------------------------------------------------\n\nThis system has three doors, and one building behind them.\n\nDoor one, the shop: what an investor sees in a browser.\n\nDoor two, the admin dashboard: our team reviews applications, creates products, manages agents, runs returns.\n\nDoor three, the API: what the mobile app uses.\n\nAll three lead to the same core. Same database, same rules. Fix a rule once, and it is fixed for web, admin, and app.\n\nOne rule for the next team: we never edit the open-source core. We add a package, so security updates from the base stay safe.\n\nNext: what is inside those packages.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 11 of 14   ·   96 words   ·   0:50 at a slow pace, 0:46 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 10:48\n------------------------------------------------------------------------------\n\nThis slide is the custom work. I will keep it quick.\n\nThe orange boxes are money. Applications, investment products, returns, and Aamarpay, our payment gateway in Bangladesh.\n\nThe green boxes are the network: agents, zones, territories. This is how we grow without staff in every district.\n\nThe light boxes are support: reports, notifications, one-time passwords, questions.\n\nTwo small points. Agents log in with a code on the phone, not a password: fewer steps, less support. And the Wegro package is tiny, but it is the only place where the two systems meet.\n\nNext: the app API.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 12 of 14   ·   134 words   ·   1:10 at a slow pace, 1:04 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 11:58\n------------------------------------------------------------------------------\n\nThis is the app's technical view. It is small, and that is good.\n\nThe login has six steps: send the code, check the code, log in, refresh the pass, read my profile, read my manager. That is all the app needs to start.\n\nThen it reads products, reads returns, and starts payments.\n\nPayments have four endpoints: success, cancel, fail, and IPN. IPN means the gateway calls our server directly, not the phone. A phone can lose connection, so the gateway is the truth. We trust IPN, and it must be signed.\n\nOn the right are the admin screens: review, agents, products, returns, and Excel reports.\n\nThe line at the bottom is a habit. After every release we print the route list, and check that nothing private became public.\n\nNext: the question clients always ask.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 13 of 14   ·   159 words   ·   1:23 at a slow pace, 1:16 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 13:21\n------------------------------------------------------------------------------\n\nClients always ask this, so let me answer it directly.\n\nToday the two systems do not talk. No API, no shared table. They are separate products under one brand.\n\nIs that a problem? Not today. OGRO knows the field. Investor knows the money.\n\nBut one day the business will ask a harder question. If the field says a farmer paid, should the investor see that?\n\nFor that day, we do not join the databases. That is the dangerous option. We build three clean bridges.\n\nOne: events. When a settlement completes in OGRO, we send a signed message to the investor system, so payouts follow the real work.\n\nTwo: the four public numbers can come from one read-only endpoint. Real data, not hard-coded figures.\n\nThree: keep users separate. Farmers and investors have different rules.\n\nAnd three rules: every message is signed, every message has an ID so we never pay twice, and failed messages are retried.\n\nNext: how we deliver.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle.", "SLIDE 14 of 14   ·   153 words   ·   1:20 at a slow pace, 1:13 at a normal pace\nPause at every full stop. The sentences are short on purpose.\nClock when this slide ends: 14:41\n------------------------------------------------------------------------------\n\nLast part: how this goes live and stays alive.\n\nWe use containers. A container is a box that holds the software and everything it needs. It runs the same everywhere, so \"it worked on my machine\" stops being an excuse.\n\nOGRO has two containers, and they restart by themselves if they crash. The investor system has one bigger container, with the web server and the background jobs. Those jobs send emails and run the return payments.\n\nOne honest point: there is no full automated release pipeline yet, and database changes are run by hand. That is the next thing I would fix. Two weeks of work, and it removes a class of human errors.\n\nTwo systems, one platform. I understand the whole path: database, server, screens, and release. So I can own a feature from the first question to the first user.\n\nThank you. I am happy to go deeper on any slide.\n\n------------------------------------------------------------------------------\nShort of time? Merge the API slides (8 and 12) into one sentence each. Never skip slide 07, the loan lifecycle."];
+const MD = ["## Slide 01 — Two systems. One platform.\n\n**Layout:** hero / title slide  \n**Section label:** Title  \n**Kicker:** Platform architecture briefing · November 2026  \n**Headline:** TWO SYSTEMS. ONE PLATFORM.\n\n**Speaking time:** 0:43 · 83 words\n\n### Body\n\n- Subtitle: OGRO — the agri-ERP that runs the field · WEGRO-INVESTOR — the platform that funds it\n- Chips: `NestJS · React · PostgreSQL` | `Laravel 8 · Bagisto · MySQL` | `517 API endpoints mapped`\n- Right rail: 01 The ecosystem · 02 OGRO: modules & loan lifecycle · 03 OGRO API surface · 04 WEGRO-INVESTOR · 05 Where they meet · 06 Deployment\n- Footer: Built from the live repos + merged code graph — 20,682 nodes / 51,950 edges\n\n### Speaker notes\n\n```text\nGood morning, and thank you for your time. My name is [your name]. I am a senior full stack developer.\n\nToday I will show you one platform. We call it WEGRO. It is not one system. It is two systems for one business.\n\nOGRO runs the farm side: farmers, field work, and the money for one season. WEGRO-INVESTOR runs the money side: it brings investors in, and pays them back.\n\nTogether they close the circle. Let me show you how they are built.\n```", "## Slide 02 — Agenda\n\n**Layout:** 2 × 3 numbered cards  \n**Section label:** Agenda  \n**Kicker:** 15 minutes · 14 slides  \n**Headline:** WHAT WE'LL COVER\n\n**Speaking time:** 0:29 · 55 words\n\n### Body\n\n| # | Block | Detail | Time |\n|---|---|---|---|\n| 01 | The ecosystem | Two systems, zero shared infrastructure | 1:30 |\n| 02 | OGRO — agri-ERP | Stack, modules, loan lifecycle | 4:30 |\n| 03 | OGRO API surface | 60 controllers, 347 endpoints | 1:00 |\n| 04 | WEGRO-INVESTOR | Packages, three surfaces, app API | 4:00 |\n| 05 | Where they meet | Today nothing — three clean bridges | 1:15 |\n| 06 | Deployment | Two pipelines, one shared infra | 1:05 |\n\n### Speaker notes\n\n```text\nThe plan has six short steps.\n\nThe big picture. Then OGRO: what it does and the main business flow. Then its API, kept short. Then the investor platform. Then how the two connect. And last, how we deliver.\n\nAll the numbers today come from the real code, not from a slide.\n\nNext: the big picture.\n```", "## Slide 03 — Ecosystem\n\n**Layout:** two system panels + centre 'no shared' marker + bottom callout  \n**Section label:** 01 · The ecosystem  \n**Kicker:** Ecosystem overview  \n**Headline:** TWO SYSTEMS, ONE BRAND\n\n**Speaking time:** 1:17 · 148 words\n\n### Body\n\n**System 1 — OGRO (Agri-ERP)** · `wegrotech-wegro-control-panel-backend` + `wegro-control-panel-frontend`\n- Runs the field: farmers, lands, surveys, field visits\n- Runs the money: project applications, loans, inputs, collections, bank settlement\n- Users: farmers · field officers · bank partners · HQ · Stack: NestJS, React 18, PostgreSQL\n\n**System 2 — WEGRO-INVESTOR** · `wegro-customer-backend` (Laravel 8 + Bagisto)\n- Raises capital: investment products, onboarding, returns\n- Runs the network: zones, territories, agents, payouts\n- Users: investors · agents · zonal managers · admins · Stack: Laravel 8, Bagisto, MySQL\n\n**Centre marker:** no shared DB · no shared code · business level only\n\n**Bottom callout — the only glue today:** `Polygon\\Wegro\\Stats` — fundDisbursed · productConnected · farmersEngaged · returnReimbursed\n\n### Speaker notes\n\n```text\nLet me start with the business problem.\n\nA small farmer needs money before the season. Seeds, fertiliser, and a drone team. It is a loan, and he pays it back after the harvest.\n\nThree groups: the farmer, who needs the loan. The field officer, who visits the farm. And the bank, which puts the money in.\n\nOGRO is the system for these three. One record per farmer. The loan, the inputs, the visits, and every payment.\n\nWhere does the money come from? From investors. WEGRO-INVESTOR is their system. An investor buys a product, and later he gets his return. Agents help people join, area by area.\n\nOne design choice: the two systems do not share a database or code. So if the investor app has a bad day, the farm work continues.\n\nThe only link today is four numbers on the investor home screen.\n\nNext: OGRO in numbers.\n```", "## Slide 04 — OGRO at a glance\n\n**Layout:** 5 KPI tiles + 3 columns + closing line  \n**Section label:** 02 · OGRO  \n**Kicker:** System 1 · the operational core  \n**Headline:** OGRO AT A GLANCE\n\n**Speaking time:** 0:57 · 110 words\n\n### Body\n\n**KPIs:** 36 NestJS modules (`src/modules/**`) · 60 controllers · 347 endpoints (Swagger at `/docs`) · 85 TypeORM entities · 68 migrations (`synchronize=false`)\n\n**Who uses it** — farmers applying to financed crop programs; field officers executing visits and collections; bank partners and HQ approving disbursement.\n**What it owns** — farmer → land → survey → project application; loan agreement, input bundle, sales, stock; collections, deposits, penalties, bank settlement.\n**How it ships** — single Docker image `wcp-backend`; Vite build behind nginx, installable PWA; shared infra compose.\n\n**Read it as:** the domain depth lives in one aggregate, `ProjectApplication`, and everything else hangs off it.\n\n### Speaker notes\n\n```text\nNow OGRO in numbers. Numbers help you judge size and risk.\n\nThirty-six modules. One module is one business area: farmers, banks, stock. Thirty-six areas means real work, not a demo.\n\nThree hundred and forty-seven endpoints. An endpoint is one action the software can do. That many actions means a user can work all day inside the system.\n\nEighty-five tables, and sixty-eight database changes. Each change is a small, tested file. We never edit the database by hand, so the data stays safe when the product grows.\n\nWho uses it: the farmer, the field officer, the bank. What it owns: the full chain, from land to last payment.\n\nNext: the technology.\n```", "## Slide 05 — Stack\n\n**Layout:** two column label/value cards + conventions callout  \n**Section label:** 02 · OGRO  \n**Kicker:** System 1 · technology  \n**Headline:** STACK & CROSS-CUTTING CONCERNS\n\n**Speaking time:** 1:02 · 118 words\n\n### Body\n\n**Backend — NestJS 10:** Express · global prefix `/api` · Swagger `/docs` · TypeORM 0.3 → PostgreSQL · Passport JWT + local · bcrypt · 1d / 7d tokens · RBAC (`role` · `permission` · `section`) · socket.io · FCM · SendGrid · cron · throttler 60 req / 6 s · ValidationPipe → 422\n\n**Frontend — React 18:** Vite 4 + TypeScript · vite-plugin-pwa · Redux Toolkit 2 + RTK Query · React Router 6 · TailwindCSS 3 + rsuite · ApexCharts / Google Maps · ProtectedRoute + `PermissionsEnum` · PDF generators · `create-api.sh` scaffolder\n\n**Conventions worth preserving:** every screen gated by ProtectedRoute + PermissionsEnum · data access is RTK Query only · DTO + class-validator on every write · UUID path params, `nestjs-typeorm-paginate` pages.\n\n### Speaker notes\n\n```text\nThis slide is about tools. I will only explain why they are good for a business.\n\nThe server uses NestJS with TypeScript. TypeScript is JavaScript with a safety net: many mistakes are caught before release.\n\nFor data we use PostgreSQL. It is well known, and strong with money records.\n\nFor login we use tokens. A token is a visitor pass. It expires after one day, so a lost phone is a short risk.\n\nThe screens are React. One web app that also installs on a phone, so we do not build two apps.\n\nWhy it matters: these are standard tools. Many developers know them, so you are not locked to one person.\n\nNext: how the system is organised.\n```", "## Slide 06 — Module map\n\n**Layout:** 2 × 2 domain cards + footnote  \n**Section label:** 02 · OGRO  \n**Kicker:** ~36 feature modules, four domains  \n**Headline:** BACKEND MODULE MAP\n\n**Speaking time:** 0:49 · 94 words\n\n### Body\n\n**Money & risk** — `project-applications ★`, `projects · project-banks`, `loan-agreements (+corrections)`, `…bank-settlements`, `…collections · …deposits`, `banks · branches · modalities`\n\n**Field operations** — `farmers · farmer-phone-updates`, `field-officers · lands`, `project-application-visits`, `field-surveys (+questions, submissions)`, `answers · sections · questions`, `field-notices · otp · call-dispatch`\n\n**Supply chain** — `inventory products (+bundles)`, `purchase-orders (+receive)`, `stock-adjustments / transfers`, `inventory-sales (+payments)`, `dealers · vendors · warehouses · units`, `commodity-trade`\n\n**Platform & CMS** — `auth · users · role · permission`, `notifications · firebase (FCM)`, `activity-log · system-settings`, `region · user-locations · export`, `file-upload (S3) · websocket · email`, website CMS\n\n**★ `ProjectApplication`** is the aggregate root: visits, collections, deposits, settlements, corrections and logs all key off it.\n\n### Speaker notes\n\n```text\nThe system is organised in four groups.\n\nMoney and risk. This is the centre: projects, loan agreements, collections, deposits, and partner banks.\n\nField operations: farmers, land, surveys, visits, and notices.\n\nSupply chain: products, warehouses, stock, purchase orders, and sales.\n\nAnd the platform: users, roles, permissions, notifications.\n\nWhy it matters: each group is separate. A new feature changes one module, not everything. Smaller change, faster test, less risk.\n\nThe star is one module: the project application. Almost every action connects to it, so new developers start there.\n\nNext: the most important flow in the system.\n```", "## Slide 07 — Loan lifecycle\n\n**Layout:** 8-node timeline + 3 footnote cards  \n**Section label:** 02 · OGRO  \n**Kicker:** ProjectApplication — the core state machine  \n**Headline:** THE LOAN LIFECYCLE\n\n**Speaking time:** 1:34 · 181 words\n\n### Body\n\n| Step | Name | What happens |\n|---|---|---|\n| 01 | Apply | Farmer submits to a project: land, survey, credit score |\n| 02 | Approve | Field officer → supervisor review; reject / blacklist paths |\n| 03 | Agreement | Loan agreement drafted, approved, corrections tracked |\n| 04 | Disburse | Bank account, CRM approval, disbursement sign-off |\n| 05 | Inputs | Input bundle selected, acknowledged, distributed |\n| 06 | Visits | Identity + crop-health ×3 + harvest completed in field |\n| 07 | Collect | Collections, deposits, late fees, penalties |\n| 08 | Settle | Settlement run to the partner bank + audit log |\n\n**Dual sign-off** — projects need COO approval then CFO approval before money moves.\n**Everything is logged** — `ProjectApplicationLog` + corrections on agreements, collections, deposits.\n**Bank-side board** — `/bank-panel` runs the whole borrower pipeline in bulk (12 bulk PATCH actions).\n\n### Speaker notes\n\n```text\nThis is the heart of the system. If you remember one slide, remember this one.\n\nOne farmer, from application to repayment. Eight steps.\n\nOne. He applies. A field officer records his land, his answers, and a credit score.\n\nTwo. We approve. The officer recommends, and a supervisor checks. We can reject, or blacklist.\n\nThree. The loan agreement: drafted, approved, stored. Corrections are recorded.\n\nFour. We pay out. First the bank account, then CRM approval. Then the money moves.\n\nFive. He gets his inputs: seeds, fertiliser, drone service. He confirms receipt.\n\nSix. Five field visits. One for identity, three to check crop health, one for the harvest. Each visit is a checkpoint.\n\nSeven. He pays back. We record every payment. If he is late, we add a late fee.\n\nEight. We settle with the bank, and we keep a full audit log.\n\nTwo things to notice. Big projects need two approvals: the COO, then the CFO. Nobody moves large money alone. And everything is logged, so the system is ready for a bank audit.\n\nNext: how the screens talk to this system.\n```", "## Slide 08 — OGRO API surface\n\n**Layout:** request-path ladder (left) + endpoint families (right) + sample routes  \n**Section label:** 03 · OGRO API  \n**Kicker:** System 1 · the surface  \n**Headline:** FRONTEND ↔ 347 ENDPOINTS\n\n**Speaking time:** 1:03 · 120 words\n\n### Body\n\n**Every request takes this path**\n1. `BrowserRouter` — isGuest / isAuthenticated guards\n2. `ProtectedRoute` — PermissionsEnum check per screen\n3. RTK Query slice — `<domain>Api.ts`, baseUrl `/api`\n4. `JwtAuthGuard` — bearer access token (1 day)\n5. `RequiredPermissions` — role → permission set, section-scoped\n6. Controller + DTO — ValidationPipe → service → TypeORM\n\n**Where the 347 endpoints live**\n- Auth & users — login (email / phone + OTP), refresh, users, roles, permissions\n- Farmers & field ops — farmers, phone-update approvals, field officers, lands, surveys, notices\n- Projects & loans — projects (COO → CFO), 30× project-applications, bank/input panels, visits\n- Inventory & trade — products, purchase orders, stock, sales, dealers, vendors, commodity\n- Platform & CMS — notifications, settings, regions, banks, firebase push, website content\n\n**Sample routes** — `PATCH /project-applications/:uuid/disburse-loan` · `GET /field-officers/dashboard` · `POST /otp/send` · `POST /bank-panel/crm-approval-bulk`\n\n### Speaker notes\n\n```text\nA short technical part. How does a screen talk to the server?\n\nEvery request passes the same doors.\n\nFirst: is the user logged in? Second: does he have permission for this screen? Third: is the pass still valid? Fourth: what is his role? A field officer sees only his own farmers. An admin sees everything.\n\nLast: is the data real? If not, the server refuses with a clear error.\n\nOnly then is the database touched.\n\nOn the right you can see where the actions live: login, farmers, projects and loans, inventory, and the platform.\n\nThere is also a documentation page that lists every endpoint, so a new team can start on day one.\n\nNext: the investor side of the platform.\n```", "## Slide 09 — Investor platform\n\n**Layout:** 5 KPI tiles + 4 capability cards + closing line  \n**Section label:** 04 · WEGRO-INVESTOR  \n**Kicker:** System 2 · Laravel 8 + Bagisto  \n**Headline:** THE INVESTOR PLATFORM\n\n**Speaking time:** 1:12 · 138 words\n\n### Body\n\n**KPIs:** 14 Polygon packages (13 business + glue) · 24 Webkul packages (read-only) · 170 route entries (admin · shop · api) · 3 surfaces · 105 Bagisto API routes (70 GET / 23 POST / 5 DEL / 2 PUT)\n\n**Capital in** — investment products catalogue, investor onboarding + application review, Aamarpay payments.\n**Capital out** — `InvestmentReturn`: reimbursement runs, return methods, refund reports, per-investor history.\n**Network** — Zone → Territory → Agent hierarchy; agents log in by OTP, see their manager, onboard investors.\n**Reach** — Investor APP push via a custom FCM channel; admin dashboard for ops and zonal managers.\n\n### Speaker notes\n\n```text\nNow the second system. Different product, different user, different technology.\n\nThe users are investors, agents, and a small operations team. So the questions change. Not \"where is the farmer's loan?\", but \"where is my money, and when do I get my return?\"\n\nFour jobs. Money in: the investor sees products and applies. Money out: we run the return payments and keep a history. Network: agents work in zones and territories, under a manager. Reach: push messages to the app.\n\nFourteen packages are our own code. Twenty-four come from the open-source base, and those are read-only.\n\nWe did not start from zero. The base already had login, admin screens, and reports, and that saved us months.\n\nBut the base gives you a shop. It does not give you investments or returns. That is our fourteen packages.\n\nNext: three doors.\n```", "## Slide 10 — Three surfaces\n\n**Layout:** 3 surface cards + shared-core band + contract line  \n**Section label:** 04 · WEGRO-INVESTOR  \n**Kicker:** System 2 · architecture  \n**Headline:** ONE CODEBASE, THREE SURFACES\n\n**Speaking time:** 0:52 · 99 words\n\n### Body\n\n**Shop — Storefront:** Bagisto shop routes + `shop-routes.php`; investment product pages, returns, FAQ, reports; Velocity theme.\n**Admin — Vue dashboard:** prefix `admin/<pkg>`, middleware `web` + `admin`; Bouncer ACL, Zonal Manager role; onboarding review, agents, products, returns.\n**API — Investor APP:** prefix `/api`, bearer JWT via OTP; agent login, me, manager, password reset; products, returns, reports, payments.\n\n**Shared core:** Laravel 8 + Bagisto Core · Eloquent models with Proxy classes · Events/Listeners · Horizon queues on Redis · MySQL\n\n**Package layout is the contract:** Providers · Http/Controllers + route files · Models (+Proxy) · Config (`acl.php`, `admin-menu.php`) · Database/Migrations.\n\n### Speaker notes\n\n```text\nThis system has three doors, and one building behind them.\n\nDoor one, the shop: what an investor sees in a browser.\n\nDoor two, the admin dashboard: our team reviews applications, creates products, manages agents, runs returns.\n\nDoor three, the API: what the mobile app uses.\n\nAll three lead to the same core. Same database, same rules. Fix a rule once, and it is fixed for web, admin, and app.\n\nOne rule for the next team: we never edit the open-source core. We add a package, so security updates from the base stay safe.\n\nNext: what is inside those packages.\n```", "## Slide 11 — Polygon packages\n\n**Layout:** 4 × 4 package grid (colour-coded) + footnote  \n**Section label:** 04 · WEGRO-INVESTOR  \n**Kicker:** System 2 · 13 business packages + platform glue  \n**Headline:** CUSTOM POLYGON PACKAGES\n\n**Speaking time:** 0:50 · 96 words\n\n### Body\n\n**Money (orange):** `Application` (investor onboarding) · `InvestmentProduct` (catalogue) · `InvestmentReturn` (returns, reimbursements) · `Aamarpay` (payments) · `Wegro` (platform glue + Stats)\n\n**Network (green):** `Agent` (agents, OTP login, JWT refresh) · `Zone` · `Territory`\n\n**Supporting (mint):** `Notification` (FCM push) · `Report` (sales / customers / projects / refunds / tax) · `OTP` · `Faq` · `CacheControl`\n\n**Upstream:** Webkul (24) — read-only, extend only\n\n`Wegro\\Stats` is the one thread that touches the other system: fundDisbursed · productConnected · farmersEngaged · returnReimbursed.\n\n### Speaker notes\n\n```text\nThis slide is the custom work. I will keep it quick.\n\nThe orange boxes are money. Applications, investment products, returns, and Aamarpay, our payment gateway in Bangladesh.\n\nThe green boxes are the network: agents, zones, territories. This is how we grow without staff in every district.\n\nThe light boxes are support: reports, notifications, one-time passwords, questions.\n\nTwo small points. Agents log in with a code on the phone, not a password: fewer steps, less support. And the Wegro package is tiny, but it is the only place where the two systems meet.\n\nNext: the app API.\n```", "## Slide 12 — Investor API\n\n**Layout:** auth ladder (left) + payments + admin routes (right) + ritual band  \n**Section label:** 04 · WEGRO-INVESTOR  \n**Kicker:** System 2 · route files  \n**Headline:** INVESTOR APP API SURFACE\n\n**Speaking time:** 1:10 · 134 words\n\n### Body\n\n**Auth ladder (OTP → JWT):** `POST /api/shoot-otp` → `POST /api/validate-otp` → `POST /api/agent/login` → `POST /api/token/refresh` → `GET /api/agent/me` → `GET /api/agent/manager`\n\n**Payments — `Polygon/Aamarpay`:** `POST /aamarpay/success` · `/cancel` · `/fail` · `/ipn` ← verify signature\n\n**Admin dashboard routes:** `admin/application…` (index · datatable · show · resubmit · update-status) · `admin/agents…` · `admin/investmentproduct` · `admin/sales/returns…` · `admin/report/*` (+XLS)\n\n**Verification ritual:** `php artisan route:list` on every release — it is the only reliable picture of ACL exposure.\n\n### Speaker notes\n\n```text\nThis is the app's technical view. It is small, and that is good.\n\nThe login has six steps: send the code, check the code, log in, refresh the pass, read my profile, read my manager. That is all the app needs to start.\n\nThen it reads products, reads returns, and starts payments.\n\nPayments have four endpoints: success, cancel, fail, and IPN. IPN means the gateway calls our server directly, not the phone. A phone can lose connection, so the gateway is the truth. We trust IPN, and it must be signed.\n\nOn the right are the admin screens: review, agents, products, returns, and Excel reports.\n\nThe line at the bottom is a habit. After every release we print the route list, and check that nothing private became public.\n\nNext: the question clients always ask.\n```", "## Slide 13 — Integration\n\n**Layout:** two system cards + 'no API' marker + 3 bridge cards + contract line  \n**Section label:** 05 · Integration  \n**Kicker:** Today: nowhere · Tomorrow: three bridges  \n**Headline:** WHERE THE TWO SYSTEMS MEET\n\n**Speaking time:** 1:23 · 159 words\n\n### Body\n\n**OGRO · PostgreSQL** — field truth: applications, inputs, visits, collections, settlements.\n**WEGRO-INVESTOR · MySQL** — capital truth: investors, products, returns, agents, payouts.\n**Centre marker:** NO API · NO WEBHOOK\n\n**01 Settlement → payout** — OGRO settlement/deposit events push to Investor as signed events.\n**02 Impact stats** — one read-only internal endpoint on OGRO feeds `Polygon\\Wegro\\Stats`.\n**03 Keep identity apart** — different populations; SSO is not warranted.\n\n**Contract rules:** signed messages · idempotency keys · retry with backoff · source event IDs · never a shared database.\n\n### Speaker notes\n\n```text\nClients always ask this, so let me answer it directly.\n\nToday the two systems do not talk. No API, no shared table. They are separate products under one brand.\n\nIs that a problem? Not today. OGRO knows the field. Investor knows the money.\n\nBut one day the business will ask a harder question. If the field says a farmer paid, should the investor see that?\n\nFor that day, we do not join the databases. That is the dangerous option. We build three clean bridges.\n\nOne: events. When a settlement completes in OGRO, we send a signed message to the investor system, so payouts follow the real work.\n\nTwo: the four public numbers can come from one read-only endpoint. Real data, not hard-coded figures.\n\nThree: keep users separate. Farmers and investors have different rules.\n\nAnd three rules: every message is signed, every message has an ID so we never pay twice, and failed messages are retried.\n\nNext: how we deliver.\n```", "## Slide 14 — Deployment\n\n**Layout:** 2 × 2 environment cards + ops-debt line + closing  \n**Section label:** 06 · Operations  \n**Kicker:** Two pipelines, one shared compose  \n**Headline:** DEPLOYMENT & INFRASTRUCTURE\n\n**Speaking time:** 1:20 · 153 words\n\n### Body\n\n**OGRO backend:** image `wcp-backend` · compose service, restart always · `APP_URL https://api.dev.wegro.global/api` · Postgres, db `wcp-backend` · SendGrid SMTP.\n**OGRO frontend:** Vite build → nginx container · client `https://dev.wegro.global` · PWA enabled, installable.\n**WEGRO-INVESTOR:** `docker/Dockerfile.production` · fpm + nginx + supervisor + cron · `storage:link` on deploy · Horizon worker on Redis.\n**Shared infra:** `wegro-docker` — proxy-server + varnish · redis + sentinel · mysql · separate deploys, always.\n\n**Closing:** two systems, one platform — and one owner who can take a feature from database to screen to release.\n\n### Speaker notes\n\n```text\nLast part: how this goes live and stays alive.\n\nWe use containers. A container is a box that holds the software and everything it needs. It runs the same everywhere, so \"it worked on my machine\" stops being an excuse.\n\nOGRO has two containers, and they restart by themselves if they crash. The investor system has one bigger container, with the web server and the background jobs. Those jobs send emails and run the return payments.\n\nOne honest point: there is no full automated release pipeline yet, and database changes are run by hand. That is the next thing I would fix. Two weeks of work, and it removes a class of human errors.\n\nTwo systems, one platform. I understand the whole path: database, server, screens, and release. So I can own a feature from the first question to the first user.\n\nThank you. I am happy to go deeper on any slide.\n```"];
+
+const slides = [...document.querySelectorAll('.slide')];
+const notesEl = document.getElementById('notes');
+const dotsEl  = document.getElementById('dots');
+const countEl = document.getElementById('count');
+const bar     = document.getElementById('bar');
+const mdArea  = document.getElementById('mdtext');
+const mdWrap  = document.getElementById('mdwrap');
+let cur = 0;
+
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(i){
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+  [...dotsEl.children].forEach((d, k) => d.classList.toggle('on', k === cur));
+  countEl.textContent = String(cur + 1).padStart(2, '0') + ' / ' + slides.length;
+  bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+  notesEl.textContent = NOTES[cur] || '(no notes for this slide)';
+  mdArea.value = MD[cur] || '';
+}
+
+function toggleMd(on){ mdWrap.classList.toggle('show', on); if (on) mdArea.value = MD[cur] || ''; }
+
+document.getElementById('next').onclick = () => go(cur + 1);
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.getElementById('btnnotes').onclick = () => notesEl.classList.toggle('show');
+document.getElementById('btnmd').onclick = () => toggleMd(true);
+document.getElementById('mdclose').onclick = () => toggleMd(false);
+document.getElementById('mdcopyone').onclick = async () => {
+  try { await navigator.clipboard.writeText(mdArea.value); } catch(e) {}
+  const b = document.getElementById('mdcopyone'); b.textContent = 'Copied';
+  setTimeout(() => b.textContent = 'Copy current slide', 1400);
+};
+document.getElementById('mdcopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(MD.join('\n\n---\n\n')); } catch(e) {}
+  const b = document.getElementById('mdcopy'); b.textContent = 'Copied';
+  setTimeout(() => b.textContent = 'Copy all', 1400);
+};
+document.getElementById('mdsave').onclick = () => {
+  const blob = new Blob([MD.join('\n\n---\n\n')], {type: 'text/markdown'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'WEGRO_DECK_SLIDES.md';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+function fit(){
+  const st = document.getElementById('stage');
+  const s = Math.min(window.innerWidth / 1330, (window.innerHeight - 20) / 760);
+  st.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fit); fit();
+
+document.addEventListener('keydown', e => {
+  if (mdWrap.classList.contains('show')) { if (e.key === 'Escape') toggleMd(false); return; }
+  if (['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  if (['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  if (e.key === 'Home') go(0);
+  if (e.key === 'End') go(slides.length - 1);
+  if (e.key.toLowerCase() === 'n') notesEl.classList.toggle('show');
+  if (e.key.toLowerCase() === 'm') toggleMd(true);
+  if (e.key.toLowerCase() === 'p') window.print();
+});
+
+go(0);
+</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a564b9ae6e12dae4',t:'MTc5Mzk3NDY4Mw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a564b9ae6e12dae4',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
