@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEGRO — Two System Architecture (15-min Deck)</title>
+<style>
+  :root{
+    --green-900:#0B3B2E; --green-800:#0C4224; --green-700:#155C42; --green-600:#1B6B4A;
+    --green-500:#2E8B62; --green-300:#7FC49F; --mint:#D9E8E0; --mint-dim:#BFDCCB;
+    --orange:#F58220; --orange-2:#F68B1F; --white:#FFFFFF; --ink:#0A2F24;
+    --w:1280px; --h:720px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#06231A;font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:var(--mint);overflow:hidden}
+  .deck{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+  .slide{width:var(--w);height:var(--h);background:linear-gradient(160deg,var(--green-800) 0%,var(--green-900) 70%);border-radius:14px;
+    padding:52px 60px 44px;position:relative;display:none;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.55);overflow:hidden}
+  .slide.active{display:flex}
+  .slide{transform-origin:center center;transform:scale(var(--fit,1))}
+  .logo{position:absolute;top:26px;left:34px;display:flex;align-items:center;gap:10px;z-index:5}
+  .logo .mark{background:var(--orange);color:#fff;font-weight:900;font-size:22px;letter-spacing:2px;
+    padding:6px 12px;border-radius:8px;font-style:italic}
+  .logo .word{color:var(--orange);font-weight:900;font-size:24px;letter-spacing:5px}
+  .pageno{position:absolute;bottom:18px;right:34px;color:var(--green-300);font-size:13px;opacity:.85;z-index:5}
+  .tag{position:absolute;bottom:18px;left:34px;color:var(--green-300);font-size:12px;letter-spacing:1.5px;opacity:.8;z-index:5}
+  h1{font-size:56px;color:var(--white);font-weight:900;letter-spacing:.5px;line-height:1.05;text-transform:uppercase}
+  h2{font-size:34px;color:var(--white);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin:44px 0 18px}
+  h2 .accent{color:var(--orange)}
+  h3{font-size:19px;color:var(--white);font-weight:700;margin-bottom:8px}
+  p,li{font-size:16.5px;line-height:1.5;color:var(--mint)}
+  .kicker{color:var(--orange);font-weight:800;letter-spacing:3px;text-transform:uppercase;font-size:14px;margin-bottom:14px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+  .card{background:var(--green-700);border-radius:14px;padding:18px 20px;border:1px solid rgba(127,196,159,.25)}
+  .card.orange{border-top:4px solid var(--orange)}
+  .num{width:38px;height:38px;border-radius:50%;background:var(--green-500);color:#fff;font-weight:800;display:flex;
+    align-items:center;justify-content:center;font-size:17px;margin-bottom:10px}
+  .num.o{background:var(--orange)}
+  .chip{display:inline-block;background:var(--green-500);color:#fff;border-radius:20px;padding:4px 14px;font-size:13px;
+    font-weight:600;margin:3px 4px 3px 0}
+  .chip.o{background:var(--orange)}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{background:var(--green-500);color:#fff;text-align:left;padding:9px 12px;font-weight:700}
+  td{padding:8px 12px;border-bottom:1px solid rgba(127,196,159,.22);color:var(--mint);vertical-align:top}
+  tr:nth-child(even) td{background:rgba(46,139,98,.12)}
+  .mono{font-family:Consolas,Menlo,monospace;font-size:13.5px;color:var(--mint-dim)}
+  .flow{display:flex;align-items:center;gap:0;margin:8px 0}
+  .step{background:var(--green-700);border:1px solid rgba(127,196,159,.35);border-radius:12px;padding:12px 14px;flex:1;text-align:center}
+  .step b{color:var(--orange);display:block;font-size:14px;margin-bottom:4px}
+  .step span{color:var(--mint);font-size:12.5px;line-height:1.35;display:block}
+  .arrow{color:var(--orange);font-size:22px;padding:0 8px;font-weight:900}
+  .kpi{display:flex;gap:18px;margin-top:6px}
+  .kpi .box{flex:1;background:var(--green-700);border-radius:12px;padding:16px 18px;text-align:center;border-bottom:4px solid var(--orange)}
+  .kpi .big{font-size:34px;font-weight:900;color:var(--orange)}
+  .kpi .lbl{font-size:13px;color:var(--mint);margin-top:2px}
+  .timeline{position:relative;margin-top:26px;padding-top:26px}
+  .timeline:before{content:"";position:absolute;top:44px;left:4%;right:4%;height:3px;background:var(--orange);opacity:.8}
+  .trow{display:flex;justify-content:space-between;position:relative}
+  .tnode{display:flex;flex-direction:column;align-items:center;width:15%}
+  .tnode .c{width:40px;height:40px;border-radius:50%;background:var(--green-500);color:#fff;font-weight:800;
+    display:flex;align-items:center;justify-content:center;border:3px solid var(--orange);z-index:2}
+  .tnode .t{margin-top:12px;text-align:center;font-size:13px;color:var(--mint);line-height:1.35}
+  .tnode .t b{color:#fff;display:block;font-size:13.5px}
+  .ctrl{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:50}
+  .ctrl button{background:var(--orange);border:0;color:#fff;font-weight:700;font-size:14px;padding:8px 18px;border-radius:20px;cursor:pointer}
+  .ctrl button:hover{background:var(--orange-2)}
+  .ctrl span{color:var(--mint);font-size:13px;align-self:center}
+  .pptx{position:fixed;top:0;right:0;width:520px;height:100vh;background:#082019;border-left:2px solid var(--orange);
+    transform:translateX(100%);transition:transform .25s;z-index:60;overflow-y:auto;padding:20px}
+  .pptx.open{transform:translateX(0)}
+  .pptx pre{white-space:pre-wrap;font-family:Consolas,Menlo,monospace;font-size:12px;color:var(--mint);line-height:1.5}
+  .pptx h4{color:var(--orange);margin-bottom:10px;font-size:15px}
+  .pptx .tip{font-size:12px;color:var(--green-300);margin-bottom:12px;line-height:1.5}
+  @media print{
+    body{overflow:visible;background:#fff}
+    .deck{display:block;width:auto;height:auto}
+    .slide{display:flex!important;page-break-after:always;box-shadow:none;border-radius:0;margin:0 auto 20px}
+    .ctrl,.pptx{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide active">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="kicker">Platform Architecture · 15-Minute Briefing</div>
+      <h1>Two System<br>Architecture</h1>
+      <p style="font-size:21px;margin-top:18px"><b style="color:#fff">One</b> for <b style="color:var(--orange)">OGRO</b> — ERP for Farmers &amp; Field Officers<br>
+      <b style="color:#fff">One</b> for <b style="color:var(--orange)">Wego-Investor</b> — Investor Backend &amp; APP</p>
+    </div>
+    <div class="tag">wegro.global · architecture overview · nov 2026</div>
+    <div class="pageno">01 / 15</div>
+  </section>
+
+  <!-- 2 ECOSYSTEM -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>The Big <span class="accent">Picture</span></h2>
+    <div class="grid g2" style="flex:1;align-items:stretch">
+      <div class="card orange"><h3>SYSTEM 1 — OGRO (Agri-ERP)</h3>
+        <p>Runs the field: farmers, field officers, drone &amp; input operations, partner banks.</p>
+        <p style="margin-top:8px" class="mono">NestJS API (PostgreSQL)<br>React 18 Control Panel (PWA)</p>
+        <div style="margin-top:10px"><span class="chip">3,454 files</span><span class="chip">347 API endpoints</span><span class="chip">85 entities</span></div>
+      </div>
+      <div class="card orange"><h3>SYSTEM 2 — WEGRO-INVESTOR</h3>
+        <p>Runs the capital: investors, agents, zoning, payouts, reporting.</p>
+        <p style="margin-top:8px" class="mono">Laravel 8 + Bagisto (MySQL + Redis)<br>Serves Admin Dashboard + Investor APP</p>
+        <div style="margin-top:10px"><span class="chip o">13,798 nodes</span><span class="chip o">14 custom packages</span><span class="chip o">170 route entries</span></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:center"><p style="font-size:17px"><b style="color:var(--orange)">Bridge (business-level, no shared DB):</b> field settlements ↔ investor payouts · aggregate impact stats flow to the Investor APP</p></div>
+    <div class="tag">ecosystem</div><div class="pageno">02 / 15</div>
+  </section>
+
+  <!-- 3 OGRO WHAT -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>System 1 — <span class="accent">OGRO</span> · What it does</h2>
+    <div class="grid g3" style="flex:1">
+      <div class="card"><div class="num">1</div><h3>Farmer Registry</h3><p>Onboarding, credit scores, phone verification (OTP + call), land parcels, field surveys.</p></div>
+      <div class="card"><div class="num">2</div><h3>Loan Programs</h3><p>Project applications → loan agreements → disbursement, with COO + CFO dual approval on projects.</p></div>
+      <div class="card"><div class="num">3</div><h3>Input Distribution</h3><p>Inventory products, bundles, warehouses, dealers, vendors, purchase orders, stock transfers, sales.</p></div>
+      <div class="card"><div class="num o">4</div><h3>Field Execution</h3><p>Field officers, notices, 5-stage visits (identity, crop-health 1–3, harvest), geolocation.</p></div>
+      <div class="card"><div class="num o">5</div><h3>Money Flow</h3><p>Collections, deposits, bank settlements, late fees &amp; penalties, corrections, approval queues.</p></div>
+      <div class="card"><div class="num o">6</div><h3>Public Website CMS</h3><p>Awards, banners, FAQs, jobs, partners, testimonials, newspapers, home backgrounds.</p></div>
+    </div>
+    <div class="tag">ogro · domain</div><div class="pageno">03 / 15</div>
+  </section>
+
+  <!-- 4 OGRO STACK -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Ogro <span class="accent">Tech Stack</span></h2>
+    <div class="grid g2" style="flex:1">
+      <div class="card"><h3>Backend — NestJS 10</h3>
+        <table><tr><th>Concern</th><th>Choice</th></tr>
+        <tr><td>API / Docs</td><td>REST prefix <span class="mono">/api</span> · Swagger <span class="mono">/docs</span></td></tr>
+        <tr><td>Data</td><td>TypeORM + PostgreSQL · 68 migrations</td></tr>
+        <tr><td>Auth</td><td>JWT 1d + refresh 7d · bcrypt</td></tr>
+        <tr><td>RBAC</td><td>role/permission/sections + guards</td></tr>
+        <tr><td>Realtime</td><td>Socket.IO gateway</td></tr>
+        <tr><td>Push/Infra</td><td>Firebase FCM · AWS S3 · SendGrid · cron · throttler</td></tr></table>
+      </div>
+      <div class="card"><h3>Frontend — React 18 + Vite</h3>
+        <table><tr><th>Concern</th><th>Choice</th></tr>
+        <tr><td>State/Data</td><td>Redux Toolkit + RTK Query</td></tr>
+        <tr><td>Routing</td><td>React Router 6 + route guards</td></tr>
+        <tr><td>UI</td><td>Tailwind + rsuite · dark/light theme</td></tr>
+        <tr><td>Viz</td><td>ApexCharts, Google Charts, Google Maps</td></tr>
+        <tr><td>Offline</td><td>PWA (vite-plugin-pwa)</td></tr>
+        <tr><td>Conventions</td><td>one <span class="mono">&lt;domain&gt;Api</span> slice per backend module</td></tr></table>
+      </div>
+    </div>
+    <div class="tag">ogro · stack</div><div class="pageno">04 / 15</div>
+  </section>
+
+  <!-- 5 OGRO BACKEND MAP -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Ogro Backend <span class="accent">Module Map</span> (~36 modules · 85 entities)</h2>
+    <div class="grid g3" style="flex:1">
+      <div class="card"><h3>People &amp; Access</h3><div><span class="chip">auth</span><span class="chip">users</span><span class="chip">roles</span><span class="chip">permissions</span><span class="chip">otp</span><span class="chip">field-officers</span><span class="chip">farmers</span><span class="chip">region</span><span class="chip">user-locations</span></div></div>
+      <div class="card"><h3>Loan Core</h3><div><span class="chip o">projects</span><span class="chip o">project-applications</span><span class="chip o">loan-agreements</span><span class="chip o">visits</span><span class="chip o">collections</span><span class="chip o">deposits</span><span class="chip o">settlements</span><span class="chip o">banks</span><span class="chip o">call-dispatch</span></div></div>
+      <div class="card"><h3>Inventory &amp; Trade</h3><div><span class="chip">inventory-products</span><span class="chip">bundles</span><span class="chip">warehouses</span><span class="chip">dealers</span><span class="chip">vendors</span><span class="chip">purchase-orders</span><span class="chip">stock-transfers</span><span class="chip">stock-adjustments</span><span class="chip">inventory-sales</span><span class="chip">commodity-trade</span></div></div>
+      <div class="card"><h3>Field Content</h3><div><span class="chip">field-surveys</span><span class="chip">survey-questions</span><span class="chip">submissions</span><span class="chip">sections</span><span class="chip">questions</span><span class="chip">answers</span><span class="chip">field-notices</span></div></div>
+      <div class="card"><h3>Platform</h3><div><span class="chip">websocket</span><span class="chip">firebase</span><span class="chip">notifications</span><span class="chip">email</span><span class="chip">file-upload</span><span class="chip">export</span><span class="chip">activity-log</span><span class="chip">system-settings</span></div></div>
+      <div class="card"><h3>Website CMS</h3><div><span class="chip">awards</span><span class="chip">banners</span><span class="chip">faqs</span><span class="chip">home-backgrounds</span><span class="chip">home-newspapers</span><span class="chip">jobs</span><span class="chip">partners</span><span class="chip">team-members</span><span class="chip">testimonials</span></div></div>
+    </div>
+    <div class="tag">ogro · backend</div><div class="pageno">05 / 15</div>
+  </section>
+
+  <!-- 6 LOAN LIFECYCLE -->
+    <!-- 6 LOAN LIFECYCLE -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>The Loan <span class="accent">Lifecycle</span> — ProjectApplication, the core state machine</h2>
+    <div class="flowwrap">
+      <div class="fstep"><div class="fnode">01</div><div class="fcard"><b>Apply</b><span>Farmer submits to a project: land, survey answers, credit score</span></div></div>
+      <div class="fstep"><div class="fnode">02</div><div class="fcard"><b>Approve</b><span>Field officer recommends, supervisor checks; reject / blacklist paths</span></div></div>
+      <div class="fstep"><div class="fnode">03</div><div class="fcard"><b>Agreement</b><span>Loan agreement drafted, approved, stored; corrections tracked</span></div></div>
+      <div class="fstep"><div class="fnode">04</div><div class="fcard"><b>Disburse</b><span>Bank account opened, CRM approval, funds move to farmer</span></div></div>
+      <div class="fstep"><div class="fnode">05</div><div class="fcard"><b>Inputs</b><span>Input bundle selected, acknowledged, distributed to farmer</span></div></div>
+      <div class="fstep"><div class="fnode">06</div><div class="fcard"><b>Visits</b><span>Identity + crop-health ×3 + harvest — each a completed checkpoint</span></div></div>
+      <div class="fstep"><div class="fnode">07</div><div class="fcard"><b>Collect</b><span>Collections &amp; deposits recorded; late fees and penalties applied</span></div></div>
+      <div class="fstep"><div class="fnode">08</div><div class="fcard"><b>Settle</b><span>Settlement run to partner bank; full audit log kept</span></div></div>
+    </div>
+    <div class="grid g3" style="flex:1;margin-top:14px">
+      <div class="card"><div class="cap">Dual sign-off</div><p>Every project needs <b style="color:#fff">COO approval, then CFO approval</b> before any money moves — nobody moves large money alone.</p></div>
+      <div class="card"><div class="cap">Everything is logged</div><p>ProjectApplicationLog plus corrections on agreements, collections and deposits — ready for a bank audit at any time.</p></div>
+      <div class="card"><div class="cap">Bank-side board</div><p><span class="mono">/bank-panel</span> runs the whole borrower pipeline in bulk — <b style="color:#fff">11 bulk PATCH actions</b> + tracking sheet.</p></div>
+    </div>
+    <div class="tag">ogro · lifecycle</div><div class="pageno">06 / 15</div>
+  </section>
+
+
+  <!-- 7 FRONTEND -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Ogro Frontend <span class="accent">Architecture</span></h2>
+    <div class="grid g2" style="flex:1">
+      <div class="card"><h3>Structure</h3>
+        <p class="mono" style="line-height:1.7">src/<br>├─ routing/&nbsp;&nbsp;AllRoutes · AppRoutes · guards (auth/guest)<br>├─ store/&nbsp;&nbsp;&nbsp;&nbsp;app · auth · filters + features/&lt;domain&gt;/&lt;domain&gt;Api<br>├─ modules/&nbsp;&nbsp;35 screen modules (mirror backend)<br>├─ components/ layouts · ProtectedRoute · PDF generators<br>├─ configs/&nbsp;&nbsp;permissionsEnum · enums/AppEnums<br>└─ services · hooks · utils · types</p>
+      </div>
+      <div class="card"><h3>Rules of the road</h3>
+        <p>• Data access <b style="color:#fff">only</b> via RTK Query slices (scaffold with <span class="mono">create-api.sh</span>)<br>
+        • Every screen gated by <span class="mono">PermissionsEnum</span> = backend permissions<br>
+        • Base API URL from env: main / report / AI endpoints<br>
+        • Signature screens: BankTrackingSheet, BankPanel, InputPanel, ProjectGanttChart, DisbursementPendingApprovals, EBL bank PDF</p>
+      </div>
+    </div>
+    <div class="tag">ogro · frontend</div><div class="pageno">07 / 15</div>
+  </section>
+
+  <!-- 8 OGRO API -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Ogro API <span class="accent">Surface</span> — 60 controllers · 347 endpoints</h2>
+    <table style="flex:1">
+      <tr><th>Area</th><th>Highlight endpoints</th></tr>
+      <tr><td>Auth</td><td class="mono">/auth/login · /auth/login-with-phone · /auth/refresh-access-token · /otp/*</td></tr>
+      <tr><td>Farmers</td><td class="mono">/farmers · /farmers/:uuid/credit-score · /farmer-phone-updates/:uuid/approve|reject</td></tr>
+      <tr><td>Applications</td><td class="mono">/project-applications/:uuid/disburse-loan · /approve · /loan-agreement/approve · /blacklist-farmer · /late-fee-update</td></tr>
+      <tr><td>Bank flow</td><td class="mono">/bank-panel/loan-disbursement-bulk · /bank-settlement-panel/pending-settlements</td></tr>
+      <tr><td>Visits</td><td class="mono">/project-application-visits/:uuid/crop-health-*/mark-as-completed</td></tr>
+      <tr><td>Collections</td><td class="mono">/project-application-collections/onboarding-fee-collection · /:uuid/correct · /approve</td></tr>
+      <tr><td>Inventory</td><td class="mono">/purchase-orders/:uuid/receive · /stock-transfers · /inventory-sales/:uuid/create-payment</td></tr>
+      <tr><td>Platform</td><td class="mono">/notifications/unread-count · /firebase-push-notification · /activity-logs</td></tr>
+    </table>
+    <p style="margin-top:8px">Full machine-readable catalog: <span class="mono">API_SURFACE_CATALOG.md</span> · live schema at <span class="mono">/docs</span></p>
+    <div class="tag">ogro · api</div><div class="pageno">08 / 15</div>
+  </section>
+
+  <!-- 9 INVESTOR WHAT -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>System 2 — <span class="accent">Wego-Investor</span> · What it does</h2>
+    <div class="grid g2" style="flex:1">
+      <div class="card orange"><h3>For investors (mobile APP)</h3>
+        <p>OTP login → browse investment products → invest → track returns &amp; refunds → push notifications (FCM) → pay in/out via <b style="color:#fff">Aamarpay</b>.</p>
+        <p class="mono" style="margin-top:8px">/api/agent/login · /api/agent/me · /api/token/refresh</p>
+      </div>
+      <div class="card orange"><h3>For the business (admin)</h3>
+        <p>Investor onboarding review (approve / re-submit), investment products &amp; returns, agent hierarchy (Zone → Territory → Agent → Zonal Manager), sales/customer/project reports.</p>
+        <p class="mono" style="margin-top:8px">admin/application · admin/investmentproduct · admin/sales/returns · admin/report/*</p>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="box"><div class="big">14</div><div class="lbl">custom Polygon packages</div></div>
+      <div class="box"><div class="big">24</div><div class="lbl">Bagisto (Webkul) packages</div></div>
+      <div class="box"><div class="big">170</div><div class="lbl">route entries total</div></div>
+      <div class="box"><div class="big">3</div><div class="lbl">surfaces: app · admin · shop</div></div>
+    </div>
+    <div class="tag">investor · domain</div><div class="pageno">09 / 15</div>
+  </section>
+
+  <!-- 10 INVESTOR ARCH -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Investor <span class="accent">Architecture</span> — Laravel 8 + Bagisto</h2>
+    <div class="flow"><div class="step"><b>Investor APP</b><span>OTP + JWT, products, returns</span></div><div class="arrow">→</div><div class="step"><b>API routes</b><span>Polygon api-routes + Webkul API</span></div><div class="arrow">→</div><div class="step"><b>Services</b><span>OnboardingService · repositories · listeners</span></div><div class="arrow">→</div><div class="step"><b>Eloquent</b><span>Polygon models + proxy pattern</span></div><div class="arrow">→</div><div class="step"><b>MySQL</b><span>+ Redis / Horizon queues</span></div></div>
+    <div class="grid g3" style="flex:1;margin-top:10px">
+      <div class="card"><h3>Push</h3><p class="mono">Polygon\Notification\PolygonFcmChannel → Investor APP (FCM); CustomerPushSubscription tokens</p></div>
+      <div class="card"><h3>Payments</h3><p class="mono">Polygon\Aamarpay — success/cancel/fail/IPN callback routes</p></div>
+      <div class="card"><h3>Platform glue</h3><p class="mono">Polygon\Wegro — service provider + Stats DTO (impact numbers)</p></div>
+    </div>
+    <div class="tag">investor · architecture</div><div class="pageno">10 / 15</div>
+  </section>
+  <!-- 11 INVESTOR LIFECYCLE -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>The Investor <span class="accent">Loop</span> — onboarding to reinvestment</h2>
+    <div class="loopflow">
+      <div class="lstep"><b>01 Onboard</b><span class="gap"></span><span>Application submitted &amp; reviewed by ops</span></div><div class="larrow">→</div>
+      <div class="lstep"><b>02 Products</b><span class="gap"></span><span>Browse investment products &amp; projects</span></div><div class="larrow">→</div>
+      <div class="lstep"><b>03 Cart</b><span class="gap"></span><span>Add products to cart</span></div><div class="larrow">→</div>
+      <div class="lstep"><b>04 Order</b><span class="gap"></span><span>Place order for the chosen product</span></div><div class="larrow">→</div>
+      <div class="lstep money"><b>05 Pay</b><span class="gap"></span><span>Transaction via Aamarpay (+ IPN webhook)</span></div><div class="larrow">→</div>
+      <div class="lstep money"><b>06 Return</b><span class="gap"></span><span>Disbursement of returns to investor</span></div><div class="larrow">→</div>
+      <div class="lstep money"><b>07 Reinvest</b><span class="gap"></span><span>Returns routed into new products</span></div>
+    </div>
+    <div class="grid g2" style="flex:1;margin-top:12px">
+      <div class="card"><div class="cap">Certificates &amp; documents</div>
+        <p>• <b style="color:#fff">Yearly tax certificate</b> per fiscal year, generated in-app<br>
+        • <b style="color:#fff">Order certificate signed by the CEO</b> — downloadable for every order<br>
+        • Both generated from the investor&apos;s real order + return history</p></div>
+      <div class="card orange"><div class="cap">Events &amp; automatic emails</div>
+        <p>• Every step emits a domain event → <b style="color:#fff">Laravel queues (Horizon) + cron jobs</b><br>
+        • Automatic emails: payment receipts, order confirmations, return notices, certificate delivery<br>
+        • <b style="color:#fff">New product published → FCM push</b> to investor apps via <span class="mono">PolygonFcmChannel</span></p></div>
+    </div>
+    <div class="tag">investor · loop</div><div class="pageno">11 / 15</div>
+  </section>
+
+
+  <!-- 11 POLYGON PACKAGES -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2><span class="accent">14</span> Custom Packages (packages/Polygon)</h2>
+    <div class="grid g3" style="flex:1">
+      <div class="card"><div class="num o">01</div><h3>Agent</h3><p>Agent accounts, hierarchy, OTP login + JWT refresh API.</p></div>
+      <div class="card"><div class="num o">02</div><h3>Application</h3><p>Investor onboarding: review, approve, re-submit requests.</p></div>
+      <div class="card"><div class="num o">03</div><h3>InvestmentProduct</h3><p>Investment product catalogue (admin + shop).</p></div>
+      <div class="card"><div class="num o">04</div><h3>InvestmentReturn</h3><p>Returns &amp; refunds, return methods, event listeners.</p></div>
+      <div class="card"><div class="num">05</div><h3>Report</h3><p>Sales, customers, projects, refunds, transactions, taxes.</p></div>
+      <div class="card"><div class="num">06</div><h3>Zone · Territory</h3><p>Geographic structure for agent network.</p></div>
+      <div class="card"><div class="num">07</div><h3>Notification</h3><p>FCM push channel + customer push subscriptions.</p></div>
+      <div class="card"><div class="num">08</div><h3>Aamarpay</h3><p>Custom payment gateway integration.</p></div>
+      <div class="card"><div class="num">09</div><h3>OTP · Faq · CacheControl · Wegro</h3><p>Auth, content, cache config, platform glue.</p></div>
+    </div>
+    <div class="tag">investor · packages</div><div class="pageno">12 / 15</div>
+  </section>
+
+  <!-- 12 INVESTOR API -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Investor <span class="accent">API Surface</span></h2>
+    <div class="grid g2" style="flex:1">
+      <div class="card"><h3>Investor APP API (Bearer JWT)</h3>
+        <p class="mono" style="line-height:1.8">POST /api/shoot-otp<br>POST /api/validate-otp<br>POST /api/agent/login<br>POST /api/token/refresh<br>POST /api/agent/password/change<br>GET&nbsp;&nbsp;/api/agent/me · /api/agent/manager</p>
+      </div>
+      <div class="card"><h3>Payments (Aamarpay)</h3>
+        <p class="mono" style="line-height:1.8">POST /aamarpay/success<br>POST /aamarpay/cancel<br>POST /aamarpay/fail<br>POST /aamarpay/ipn&nbsp;&nbsp;(verify signatures!)</p>
+      </div>
+    </div>
+    <table style="margin-top:12px">
+      <tr><th>Admin</th><th>Shop</th><th>Storefront API (Bagisto)</th></tr>
+      <tr><td class="mono">admin/application · datatable · approve · resubmit<br>admin/investmentproduct · admin/sales/returns<br>admin/report/* · admin/agents · admin/faqs</td>
+      <td class="mono">shop/application<br>shop/investmentproduct<br>shop/investmentreturn<br>shop/faq · shop/report</td>
+      <td class="mono">105 endpoints: categories, products, cart,<br>checkout, orders, customers, CMS<br>+ Polygon investor additions</td></tr>
+    </table>
+    <div class="tag">investor · api</div><div class="pageno">13 / 15</div>
+  </section>
+
+  <!-- 13 RELATIONSHIP -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>How the Two <span class="accent">Systems Relate</span></h2>
+    <div class="flow"><div class="step"><b>OGRO</b><span>farmers · field officers · banks · loans</span></div><div class="arrow" style="color:var(--green-300)">—</div><div class="step"><b>shared brand</b><span>wegro.global</span></div><div class="arrow" style="color:var(--green-300)">—</div><div class="step"><b>Investor</b><span>investors · agents · returns</span></div></div>
+    <div class="grid g2" style="flex:1;margin-top:12px">
+      <div class="card"><h3>Today: independent stacks</h3><p>Separate languages, DBs (PostgreSQL vs MySQL), repos, pipelines. No live system-to-system calls — relationship is at product/brand level.</p></div>
+      <div class="card orange"><h3>Recommended integration bus</h3><p>1. Settlement/deposit events → investor payouts (HMAC-signed webhook)<br>2. <span class="mono">GET /impact-stats</span> on OGRO → feeds Wegro\Stats in the APP<br>3. Payout confirmations back to OGRO ledger</p></div>
+    </div>
+    <div class="tag">integration</div><div class="pageno">14 / 15</div>
+  </section>
+
+  <!-- 14 DEPLOYMENT -->
+  <section class="slide">
+    <div class="logo"><span class="mark">W</span><span class="word">WEGRO</span></div>
+    <h2>Deployment &amp; <span class="accent">Infrastructure</span></h2>
+    <div class="grid g2" style="flex:1">
+      <div class="card"><h3>Ogro</h3><p>• <span class="mono">wcp-backend</span> Docker image (restart always)<br>• Staging: api.dev.wegro.global / dev.wegro.global<br>• Postgres · SendGrid SMTP · S3 uploads<br>• Frontend: Vite build → nginx (Dockerfile + nginx.conf)<br>• Local: postgres-docker · shared: wegro-docker (nginx/varnish/redis/mysql)</p></div>
+      <div class="card"><h3>Wegro-Investor</h3><p>• Docker: Dockerfile.production (php-fpm + nginx + supervisor + cron)<br>• MySQL · Redis + Horizon queues<br>• Post-deploy: storage:link, storage perms (www-data)<br>• Aamarpay sandbox for payment testing</p></div>
+    </div>
+    <div class="card" style="margin-top:12px;border-left:4px solid var(--orange)"><p><b style="color:var(--orange)">Found in repo:</b> secrets committed in <span class="mono">docker-compose-stagging.yml</span> (DB password, JWT secrets, SendGrid key) — rotate &amp; move to secret manager (see architecture doc §11).</p></div>
+    <div class="tag">deployment</div><div class="pageno">15 / 15</div>
+  </section>
+  
+  
+</div>
+
+<div class="ctrl">
+  <button onclick="go(-1)">◀ Prev</button><span id="pos">1 / 15</span><button onclick="go(1)">Next ▶</button>
+  <button onclick="document.getElementById('pptx').classList.toggle('open')">PPTX Markdown</button>
+  <button onclick="window.print()">Print/PDF</button>
+</div>
+
+<aside class="pptx" id="pptx">
+  <h4>Per-slide markdown for your PPTX agent</h4>
+  <p class="tip">Copy this block into any markdown→PPTX tool. If the tool speaks HTML better than markdown, use <b>Print/PDF</b> on the deck itself (16 pages, brand-styled) and convert the PDF.</p>
+  <pre>WEGRO — Two System Architecture (15-slide deck)
+
+## Slide 1 — Title
+# WEGRO — Two System Architecture
+One platform. Two systems.
+- System 1 — OGRO: ERP for Farmers &amp; Field Officers (NestJS + React)
+- System 2 — Wegro-Investor: Investor Backend &amp; APP (Laravel + Bagisto)
+
+## Slide 2 — The Big Picture
+- OGRO runs the field: farmers, field officers, drone &amp; input ops, partner banks — NestJS API (PostgreSQL) + React 18 PWA — 3,454 files, 347 API endpoints, 85 entities
+- Wegro-Investor runs the capital: investors, agents, zones, payouts — Laravel 8 + Bagisto (MySQL + Redis) — admin dashboard + mobile APP — 14 custom packages, 170 route entries
+- Bridge: field settlements ↔ investor payouts; aggregate impact stats to the APP (no shared DB)
+
+## Slide 3 — OGRO domain
+Farmer registry (credit score, OTP/call verification, lands, surveys) · Loan programs (project applications → agreements → disbursement; COO+CFO dual approval) · Input distribution (products, bundles, warehouses, dealers, vendors, POs, transfers, sales) · Field execution (officers, notices, 5-stage visits) · Money flow (collections, deposits, settlements, penalties) · Website CMS.
+
+## Slide 4 — OGRO stack
+Backend: NestJS 10, REST /api + Swagger /docs, TypeORM + PostgreSQL (68 migrations), JWT 1d/refresh 7d, bcrypt, role-permission RBAC + guards, Socket.IO, Firebase FCM, AWS S3, SendGrid, cron, throttler.
+Frontend: React 18 + Vite, Redux Toolkit + RTK Query, React Router 6 with guards, Tailwind + rsuite, ApexCharts/Google Charts/Maps, PWA, one RTK slice per backend module (create-api.sh).
+
+## Slide 5 — Backend module map
+~36 modules, 85 entities: people (auth/users/roles/permissions/otp/field-officers/farmers/region/user-locations), loan core (projects/project-applications/loan-agreements/visits/collections/deposits/settlements/banks/call-dispatch), inventory &amp; trade, field content (surveys/questions/sections/answers/notices), platform (websocket/firebase/notifications/email/file-upload/export/activity-log/system-settings), website CMS.
+
+## Slide 6 — Loan lifecycle
+8-step state machine: 01 Apply (land, survey, credit score) → 02 Approve (officer recommends, supervisor checks; reject/blacklist) → 03 Agreement (drafted, approved, corrections) → 04 Disburse (bank account, CRM approval) → 05 Inputs (bundle selected, acknowledged, distributed) → 06 Visits (identity + crop-health ×3 + harvest) → 07 Collect (collections, deposits, late fees, penalties) → 08 Settle (bank settlement + audit log).
+Bottom cards: dual sign-off COO→CFO · everything logged · /bank-panel runs the pipeline with 11 bulk PATCH actions.
+
+## Slide 7 — Frontend architecture
+Structure: routing/ (AllRoutes, AppRoutes, guards), store/ (app, auth, filters + features/&lt;domain&gt;/&lt;domain&gt;Api), modules/ (35), components/ (MasterLayout, ProtectedRoute, PDF), configs/permissionsEnum, enums/AppEnums.
+Rules: RTK Query only; screens gated by PermissionsEnum mirroring backend; main/report/AI API URLs. Signature screens: BankTrackingSheet, BankPanel, InputPanel, ProjectGanttChart, DisbursementPendingApprovals, EBLBankPdfGenerator.
+
+## Slide 8 — API surface
+60 controllers, 347 endpoints: auth (/auth/login, refresh), farmers (+credit-score, phone update approvals), applications (disburse-loan, approve, blacklist, late-fee), bank flow (11 bulk actions), visits (mark-as-completed ×5), collections (onboarding fee, correct, approve), inventory (PO receive, transfers, sales payments), platform (notifications, firebase push, activity logs). Live docs at /docs.
+
+## Slide 9 — Investor domain
+Investor APP: OTP login → products → invest → track returns → FCM push → Aamarpay pay in/out.
+Admin: onboarding review, products &amp; returns, agent hierarchy (Zone→Territory→Agent→Zonal Manager), reports (sales/customers/projects/refunds/transactions/taxes).
+KPIs: 14 custom packages · 24 Bagisto packages · 170 routes · 3 surfaces.
+
+## Slide 10 — Investor architecture
+Flow: Investor APP → api routes (Polygon + Webkul API) → services (OnboardingService, repositories, listeners) → Eloquent (proxy pattern) → MySQL + Redis/Horizon.
+Key: Polygon\Notification\PolygonFcmChannel (push), Polygon\Aamarpay (payments), Polygon\Wegro (glue + Stats DTO).
+
+## Slide 11 — The investor loop
+01 Onboard (application → ops review) → 02 Products (browse investment products &amp; projects) → 03 Cart → 04 Order → 05 Pay (transaction via Aamarpay + IPN webhook) → 06 Return (disbursement to investor) → 07 Reinvest (returns into new products).
+Certificates: yearly tax certificate per fiscal year; order certificate signed by the CEO — both downloadable in-app, generated from real order/return history.
+Automation: every step emits a domain event → Laravel queues (Horizon) + cron jobs send automatic emails (payment receipts, order confirmations, return notices, certificate delivery); new product published → FCM push to investor apps.
+
+## Slide 12 — Custom packages
+Agent (accounts, OTP+JWT) · Application (onboarding) · InvestmentProduct · InvestmentReturn · Report · Zone/Territory · Notification (FCM) · Aamarpay · OTP/Faq/CacheControl/Wegro.
+
+## Slide 13 — Investor API
+APP API: POST /api/shoot-otp, /validate-otp, /agent/login, /token/refresh, password/change; GET /agent/me, /agent/manager.
+Payments: /aamarpay/success|cancel|fail|ipn (verify signatures).
+Admin: application (+datatable, approve, resubmit), investmentproduct, sales/returns, report/*, agents, faqs. Shop: application, investmentproduct, investmentreturn, faq, report. Storefront: 105 Bagisto API endpoints.
+
+## Slide 14 — Relationship
+Independent stacks today (languages/DBs/pipelines separate). Recommended: settlement/deposit events → payouts (HMAC webhook); GET /impact-stats on OGRO feeds Wegro\Stats; payout confirmations back to OGRO.
+
+## Slide 15 — Deployment
+Ogro: wcp-backend Docker, staging api.dev.wegro.global, Postgres, S3, SendGrid, nginx frontend, shared wegro-docker infra.
+Investor: Dockerfile.production (fpm/nginx/supervisor/cron), MySQL, Redis+Horizon, storage:link post-deploy.
+Alert: secrets in staging compose must be rotated.
+Deliverables: TWO_SYSTEM_ARCHITECTURE.md, API_SURFACE_CATALOG.md, this deck, graphify-out/.</pre>
+</aside>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];let i=0;
+  const pos=document.getElementById('pos');
+  function show(){slides.forEach((s,k)=>s.classList.toggle('active',k===i));pos.textContent=(i+1)+' / '+slides.length}
+  function go(d){i=Math.min(Math.max(i+d,0),slides.length-1);show()}
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1)});
+</script>
+
+<script>
+  (function(){
+    function fit(){
+      var s=Math.min(innerWidth/1300, innerHeight/740);
+      document.querySelectorAll('.slide').forEach(function(el){el.style.setProperty('--fit', s);});
+    }
+    fit(); addEventListener('resize', fit);
+  })();
+</script>
+</body>
+</html>
